@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FieldCloseAi Admin Portal v4 — Staff View</title>
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8f8f8;
+      --bg-tertiary: #f0f0f0;
+      --text-primary: #1a1a1a;
+      --text-secondary: #666;
+      --text-tertiary: #999;
+      --border: #e5e5e5;
+      --border-light: #f0f0f0;
+      --teal: #0D9488;
+      --teal-light: #f0fdfa;
+      --red: #dc2626;
+      --red-light: #fef2f2;
+      --amber: #d97706;
+      --amber-light: #fffbeb;
+      --green: #16a34a;
+      --green-light: #f0fdf4;
+      --blue: #2563eb;
+      --blue-light: #eff6ff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-primary: #1a1a1a;
+        --bg-secondary: #222;
+        --bg-tertiary: #2a2a2a;
+        --text-primary: #f5f5f5;
+        --text-secondary: #999;
+        --text-tertiary: #666;
+        --border: #333;
+        --border-light: #2a2a2a;
+        --teal: #2dd4bf;
+        --teal-light: #1a2e2b;
+        --red: #f87171;
+        --red-light: #2e1a1a;
+        --amber: #fbbf24;
+        --amber-light: #2e2a1a;
+        --green: #4ade80;
+        --green-light: #1a2e1f;
+        --blue: #60a5fa;
+        --blue-light: #1a2440;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg-secondary); color: var(--text-primary); font-size: 14px; line-height: 1.5; }
+    
+    .page-header { padding: 20px 20px 12px; }
+    .page-header h1 { font-size: 17px; font-weight: 500; margin-bottom: 2px; }
+    .page-header p { font-size: 13px; color: var(--text-secondary); }
+    
+    .view-tabs { display: flex; gap: 8px; padding: 0 20px 16px; flex-wrap: wrap; }
+    .view-tab { padding: 7px 14px; font-size: 13px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text-primary); }
+    .view-tab.active { background: var(--teal); color: white; border-color: var(--teal); }
+
+    .shell { display: flex; height: 88vh; margin: 0 20px 20px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; position: relative; }
+    
+    .nav-rail { width: 52px; background: var(--bg-secondary); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 14px 0; flex-shrink: 0; }
+    .nav-logo { width: 30px; height: 30px; background: var(--teal); border-radius: 7px; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; font-weight: 600; margin-bottom: 20px; }
+    .nav-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; color: var(--text-tertiary); margin-bottom: 4px; position: relative; }
+    .nav-icon:hover { background: var(--bg-tertiary); color: var(--text-secondary); }
+    .nav-icon.active { background: var(--bg-primary); color: var(--teal); }
+    .nav-icon svg { width: 18px; height: 18px; }
+    .nav-icon .badge { position: absolute; top: 4px; right: 4px; min-width: 16px; height: 16px; background: var(--red); color: white; font-size: 9px; font-weight: 600; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+    .nav-spacer { flex: 1; }
+    .nav-avatar { width: 28px; height: 28px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: var(--teal); cursor: pointer; }
+
+    .split { display: flex; flex: 1; overflow: hidden; }
+    
+    .board-panel { flex: 1; display: flex; flex-direction: column; border-right: 1px solid var(--border); min-width: 0; }
+    
+    .board-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .board-title { font-size: 15px; font-weight: 500; }
+    .search-input { padding: 7px 11px; font-size: 13px; border: 1px solid var(--border); border-radius: 5px; background: var(--bg-secondary); width: 200px; color: var(--text-primary); }
+    .search-input::placeholder { color: var(--text-tertiary); }
+
+    .filter-bar { padding: 10px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    
+    .time-filters { display: flex; gap: 4px; }
+    .time-filter { padding: 5px 10px; font-size: 12px; background: transparent; border: 1px solid transparent; border-radius: 4px; cursor: pointer; color: var(--text-secondary); }
+    .time-filter:hover { background: var(--bg-secondary); }
+    .time-filter.active { background: var(--bg-tertiary); color: var(--text-primary); font-weight: 500; border-color: var(--border); }
+    
+    .status-filters { display: flex; gap: 4px; }
+    .status-filter { padding: 5px 10px; font-size: 12px; background: transparent; border: none; border-radius: 4px; cursor: pointer; color: var(--text-secondary); }
+    .status-filter:hover { background: var(--bg-secondary); }
+    .status-filter.active { background: var(--teal-light); color: var(--teal); font-weight: 500; }
+    .status-filter .ct { font-size: 11px; margin-left: 3px; opacity: 0.7; }
+    .status-filter.alert { color: var(--red); }
+    .status-filter.alert.active { background: var(--red-light); color: var(--red); }
+
+    .board-list { flex: 1; overflow-y: auto; padding: 12px; }
+    
+    .row { display: flex; align-items: center; padding: 11px 12px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 7px; margin-bottom: 6px; cursor: pointer; gap: 10px; }
+    .row:hover { border-color: var(--text-tertiary); }
+    .row.selected { border-color: var(--teal); background: var(--teal-light); }
+    
+    .row-priority { width: 3px; height: 32px; border-radius: 2px; flex-shrink: 0; }
+    .row-priority.urgent { background: var(--red); }
+    .row-priority.action { background: var(--amber); }
+    .row-priority.progress { background: var(--teal); }
+    .row-priority.pending { background: var(--border); }
+    .row-priority.issue { background: var(--blue); }
+    
+    .row-type { width: 16px; flex-shrink: 0; text-align: center; font-size: 12px; color: var(--text-tertiary); }
+    
+    .row-main { flex: 1; min-width: 0; }
+    .row-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .row-meta { font-size: 12px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    
+    .row-time { text-align: right; flex-shrink: 0; min-width: 65px; }
+    .row-time-main { font-size: 13px; font-weight: 500; }
+    .row-time-sub { font-size: 11px; color: var(--text-secondary); }
+    
+    .row-status { flex-shrink: 0; min-width: 100px; text-align: right; }
+    .tag { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; padding: 3px 8px; border-radius: 10px; font-weight: 500; }
+    .tag.urgent { background: var(--red-light); color: var(--red); }
+    .tag.action { background: var(--amber-light); color: var(--amber); }
+    .tag.live { background: var(--green-light); color: var(--green); }
+    .tag.issue { background: var(--blue-light); color: var(--blue); }
+    .tag .pulse { width: 5px; height: 5px; background: currentColor; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    
+    .row-icons { display: flex; gap: 6px; flex-shrink: 0; }
+    .row-icon { color: var(--text-tertiary); }
+    .row-icon.has { color: var(--teal); }
+    .row-icon svg { width: 14px; height: 14px; }
+    
+    .row-owner { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: var(--text-secondary); }
+    .row-owner.unassigned { background: var(--amber-light); color: var(--amber); font-size: 11px; }
+
+    .inbox-panel { width: 340px; display: flex; flex-direction: column; background: var(--bg-secondary); flex-shrink: 0; }
+    
+    .inbox-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .inbox-title { font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+    .inbox-badge { background: var(--red); color: white; font-size: 10px; padding: 2px 7px; border-radius: 8px; font-weight: 600; }
+    .inbox-badge.zero { background: var(--green); }
+    
+    .inbox-tabs { display: flex; gap: 4px; padding: 10px 16px; border-bottom: 1px solid var(--border); }
+    .inbox-tab { padding: 5px 10px; font-size: 12px; background: transparent; border: none; border-radius: 4px; cursor: pointer; color: var(--text-secondary); }
+    .inbox-tab:hover { background: var(--bg-tertiary); }
+    .inbox-tab.active { background: var(--bg-primary); color: var(--text-primary); font-weight: 500; }
+    .inbox-tab .ct { font-size: 11px; margin-left: 3px; opacity: 0.7; }
+    
+    .inbox-list { flex: 1; overflow-y: auto; }
+    
+    .msg { padding: 12px 16px; border-bottom: 1px solid var(--border-light); cursor: pointer; background: var(--bg-primary); }
+    .msg:hover { background: var(--bg-secondary); }
+    .msg.unread { border-left: 3px solid var(--teal); }
+    .msg.unread .msg-sender { font-weight: 600; }
+    
+    .msg-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+    .msg-sender { font-size: 13px; flex: 1; }
+    .msg-sla { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 500; flex-shrink: 0; margin-left: 8px; }
+    .msg-sla.green { background: var(--green-light); color: var(--green); }
+    .msg-sla.amber { background: var(--amber-light); color: var(--amber); }
+    .msg-sla.red { background: var(--red-light); color: var(--red); }
+    
+    .msg-preview { font-size: 12px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; }
+    
+    .msg-footer { display: flex; justify-content: space-between; align-items: center; }
+    .msg-match { font-size: 11px; color: var(--teal); display: flex; align-items: center; gap: 4px; }
+    .msg-match svg { width: 12px; height: 12px; }
+    .msg-time { font-size: 11px; color: var(--text-tertiary); }
+    .msg-owner { font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; }
+    .msg-owner-avatar { width: 16px; height: 16px; border-radius: 50%; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600; }
+
+    .inbox-empty { padding: 40px 20px; text-align: center; color: var(--text-tertiary); }
+    .inbox-empty svg { width: 32px; height: 32px; margin-bottom: 10px; opacity: 0.4; }
+    .inbox-empty p { font-size: 13px; }
+
+    .msg-detail { padding: 16px; background: var(--bg-primary); border-bottom: 1px solid var(--border); }
+    .msg-detail-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .msg-detail-from { font-size: 14px; font-weight: 500; }
+    .msg-detail-subject { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+    .msg-detail-sla { text-align: right; }
+    .msg-detail-sla-label { font-size: 10px; color: var(--text-tertiary); }
+    .msg-detail-sla-time { font-size: 13px; font-weight: 600; }
+    .msg-detail-sla-time.green { color: var(--green); }
+    .msg-detail-sla-time.amber { color: var(--amber); }
+    .msg-detail-sla-time.red { color: var(--red); }
+    
+    .msg-detail-body { font-size: 13px; line-height: 1.6; margin-bottom: 16px; padding: 12px; background: var(--bg-secondary); border-radius: 6px; }
+    
+    .msg-detail-match { background: var(--teal-light); padding: 10px 12px; border-radius: 6px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .msg-detail-match-info { }
+    .msg-detail-match-label { font-size: 10px; color: var(--text-secondary); }
+    .msg-detail-match-value { font-size: 13px; font-weight: 500; color: var(--teal); }
+    .msg-detail-match-btn { font-size: 12px; color: var(--teal); background: none; border: none; cursor: pointer; text-decoration: underline; }
+    
+    .msg-detail-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .btn { padding: 8px 14px; font-size: 12px; border-radius: 5px; cursor: pointer; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-primary); font-weight: 500; }
+    .btn:hover { border-color: var(--text-tertiary); }
+    .btn.primary { background: var(--teal); color: white; border-color: var(--teal); }
+    .btn.sm { padding: 5px 10px; font-size: 11px; }
+    
+    .msg-detail-options { display: flex; align-items: center; gap: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .msg-detail-options label { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); cursor: pointer; }
+    .msg-detail-options input { margin: 0; }
+
+    /* Chat */
+    .chat-launcher { position: absolute; bottom: 20px; right: 360px; z-index: 200; }
+    .chat-launcher-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--teal); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+    .chat-launcher-btn svg { width: 20px; height: 20px; }
+    .chat-launcher-btn .badge { position: absolute; top: -2px; right: -2px; min-width: 18px; height: 18px; background: var(--red); color: white; font-size: 10px; font-weight: 600; border-radius: 9px; display: flex; align-items: center; justify-content: center; }
+    
+    .chat-contacts { position: absolute; bottom: 56px; right: 0; width: 220px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.12); overflow: hidden; }
+    .chat-contacts-header { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 12px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; }
+    .chat-contacts-close { background: none; border: none; font-size: 16px; color: var(--text-tertiary); cursor: pointer; }
+    .chat-contacts-list { max-height: 200px; overflow-y: auto; }
+    .chat-contact { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; }
+    .chat-contact:hover { background: var(--bg-secondary); }
+    .chat-contact-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: var(--text-secondary); flex-shrink: 0; position: relative; }
+    .chat-contact-avatar.online::after { content: ''; position: absolute; bottom: 0; right: 0; width: 8px; height: 8px; background: var(--green); border-radius: 50%; border: 2px solid var(--bg-primary); }
+    .chat-contact-name { font-size: 13px; }
+    
+    .chat-window { position: absolute; bottom: 20px; width: 280px; height: 360px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.12); overflow: hidden; display: flex; flex-direction: column; }
+    .chat-window-1 { right: 360px; }
+    .chat-window-2 { right: 660px; }
+    
+    .chat-header { padding: 10px 12px; background: var(--bg-secondary); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .chat-header-info { display: flex; align-items: center; gap: 8px; }
+    .chat-header-avatar { width: 24px; height: 24px; border-radius: 50%; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; }
+    .chat-header-name { font-size: 13px; font-weight: 500; }
+    .chat-header-actions { display: flex; gap: 2px; }
+    .chat-header-btn { background: none; border: none; color: var(--text-tertiary); cursor: pointer; padding: 4px; font-size: 14px; }
+    .chat-header-btn:hover { color: var(--text-primary); }
+    
+    .chat-body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .chat-msg { max-width: 85%; padding: 8px 12px; border-radius: 12px; font-size: 13px; }
+    .chat-msg.them { background: var(--bg-secondary); align-self: flex-start; border-bottom-left-radius: 4px; }
+    .chat-msg.me { background: var(--teal); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+    .chat-msg-time { font-size: 10px; color: var(--text-tertiary); margin-top: 2px; }
+    .chat-msg.me .chat-msg-time { color: rgba(255,255,255,0.7); }
+    
+    .chat-input { padding: 10px 12px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+    .chat-input input { flex: 1; padding: 8px 12px; font-size: 13px; border: 1px solid var(--border); border-radius: 18px; background: var(--bg-secondary); color: var(--text-primary); }
+    .chat-input button { width: 32px; height: 32px; border-radius: 50%; background: var(--teal); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .chat-input button svg { width: 14px; height: 14px; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="page-header">
+    <h1>FieldCloseAi — Admin Portal v4</h1>
+    <p>Simplified filters · SLA timers · Unified inbox · Floating chat</p>
+  </div>
+  
+  <div class="view-tabs">
+    <button class="view-tab active" onclick="showView('main')">Main View</button>
+    <button class="view-tab" onclick="showView('message')">Message Triage</button>
+    <button class="view-tab" onclick="showView('chat')">With Chat</button>
+    <button class="view-tab" onclick="showView('clean')">All Clear</button>
+  </div>
+
+  <!-- MAIN VIEW -->
+  <div id="view-main" class="view">
+    <div class="shell">
+      <div class="nav-rail">
+        <div class="nav-logo">FC</div>
+        <div class="nav-icon active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+        <div class="nav-spacer"></div>
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="badge">2</span></div>
+        <div class="nav-avatar">R</div>
+      </div>
+      
+      <div class="split">
+        <div class="board-panel">
+          <div class="board-header">
+            <span class="board-title">Orders</span>
+            <input type="text" class="search-input" placeholder="Search...">
+          </div>
+          
+          <div class="filter-bar">
+            <div class="time-filters">
+              <button class="time-filter active">Today</button>
+              <button class="time-filter">Tomorrow</button>
+              <button class="time-filter">This Week</button>
+              <button class="time-filter">Custom</button>
+            </div>
+            <div class="status-filters">
+              <button class="status-filter active">All <span class="ct">21</span></button>
+              <button class="status-filter alert">Needs Action <span class="ct">3</span></button>
+              <button class="status-filter">Post-Close <span class="ct">2</span></button>
+              <button class="status-filter">Mine <span class="ct">5</span></button>
+            </div>
+          </div>
+          
+          <div class="board-list">
+            <div class="row">
+              <div class="row-priority urgent"></div>
+              <div class="row-type">●</div>
+              <div class="row-main">
+                <div class="row-name">Martinez · Refi</div>
+                <div class="row-meta">Land Title · Tampa</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">2:00 PM</div></div>
+              <div class="row-status"><span class="tag urgent">Witness issue</span></div>
+              <div class="row-icons"><span class="row-icon has"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span></div>
+              <div class="row-owner">R</div>
+            </div>
+            
+            <div class="row">
+              <div class="row-priority action"></div>
+              <div class="row-type">●</div>
+              <div class="row-main">
+                <div class="row-name">Chen · Purchase</div>
+                <div class="row-meta">Tampa Bay Title · Tampa</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">3:30 PM</div></div>
+              <div class="row-status"><span class="tag action">No notary</span></div>
+              <div class="row-icons"></div>
+              <div class="row-owner unassigned">?</div>
+            </div>
+            
+            <div class="row">
+              <div class="row-priority action"></div>
+              <div class="row-type">●</div>
+              <div class="row-main">
+                <div class="row-name">Park · HELOC</div>
+                <div class="row-meta">First Title · Charlotte</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">4:00 PM</div></div>
+              <div class="row-status"><span class="tag action">Docs overdue</span></div>
+              <div class="row-icons"></div>
+              <div class="row-owner">S</div>
+            </div>
+            
+            <div class="row">
+              <div class="row-priority progress"></div>
+              <div class="row-type">●</div>
+              <div class="row-main">
+                <div class="row-name">Rodriguez · Purchase</div>
+                <div class="row-meta">Land Title · Charlotte</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">10:00 AM</div></div>
+              <div class="row-status"><span class="tag live"><span class="pulse"></span> En route</span></div>
+              <div class="row-icons"></div>
+              <div class="row-owner">R</div>
+            </div>
+            
+            <div class="row">
+              <div class="row-priority progress"></div>
+              <div class="row-type">●</div>
+              <div class="row-main">
+                <div class="row-name">Williams · Refi</div>
+                <div class="row-meta">First Title · Huntersville</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">9:30 AM</div></div>
+              <div class="row-status"><span class="tag live"><span class="pulse"></span> At table</span></div>
+              <div class="row-icons"></div>
+              <div class="row-owner">S</div>
+            </div>
+            
+            <div class="row">
+              <div class="row-priority pending"></div>
+              <div class="row-type">●</div>
+              <div class="row-main">
+                <div class="row-name">Thompson · HELOC</div>
+                <div class="row-meta">First Title · Huntersville</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">11:00 AM</div></div>
+              <div class="row-status"></div>
+              <div class="row-icons"></div>
+              <div class="row-owner">R</div>
+            </div>
+            
+            <div class="row">
+              <div class="row-priority issue"></div>
+              <div class="row-type">○</div>
+              <div class="row-main">
+                <div class="row-name">Johnson · Refi</div>
+                <div class="row-meta">Closed Apr 18 · Tampa Bay Title</div>
+              </div>
+              <div class="row-time">
+                <div class="row-time-main">3 days</div>
+                <div class="row-time-sub">open</div>
+              </div>
+              <div class="row-status"><span class="tag issue">Missing initials</span></div>
+              <div class="row-icons"><span class="row-icon has"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span></div>
+              <div class="row-owner">S</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="inbox-panel">
+          <div class="inbox-header">
+            <span class="inbox-title">Inbox <span class="inbox-badge">5</span></span>
+          </div>
+          <div class="inbox-tabs">
+            <button class="inbox-tab active">Unassigned <span class="ct">3</span></button>
+            <button class="inbox-tab">Mine <span class="ct">2</span></button>
+            <button class="inbox-tab">All</button>
+          </div>
+          <div class="inbox-list">
+            <div class="msg unread">
+              <div class="msg-top">
+                <span class="msg-sender">Land Title Main</span>
+                <span class="msg-sla red">47m</span>
+              </div>
+              <div class="msg-preview">Notary will need to show ID at the front desk...</div>
+              <div class="msg-footer">
+                <span class="msg-match"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Martinez · Refi</span>
+                <span class="msg-time">47m ago</span>
+              </div>
+            </div>
+            
+            <div class="msg unread">
+              <div class="msg-top">
+                <span class="msg-sender">Tampa Bay Title</span>
+                <span class="msg-sla amber">18m</span>
+              </div>
+              <div class="msg-preview">RE: Chen Purchase - borrower wants 4pm</div>
+              <div class="msg-footer">
+                <span class="msg-match"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Chen · Purchase</span>
+                <span class="msg-time">18m ago</span>
+              </div>
+            </div>
+            
+            <div class="msg unread">
+              <div class="msg-top">
+                <span class="msg-sender">First Title Co</span>
+                <span class="msg-sla green">8m</span>
+              </div>
+              <div class="msg-preview">We'll be closing early Friday at 3pm...</div>
+              <div class="msg-footer">
+                <span class="msg-time">8m ago</span>
+              </div>
+            </div>
+            
+            <div class="msg">
+              <div class="msg-top">
+                <span class="msg-sender">Tampa Bay Title</span>
+              </div>
+              <div class="msg-preview">RE: Johnson correction - received, thank you!</div>
+              <div class="msg-footer">
+                <span class="msg-match"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Johnson · Refi</span>
+                <span class="msg-owner"><span class="msg-owner-avatar">S</span> Sue</span>
+              </div>
+            </div>
+            
+            <div class="msg">
+              <div class="msg-top">
+                <span class="msg-sender">Notary: Maria G.</span>
+              </div>
+              <div class="msg-preview">Note: Running 5 minutes late</div>
+              <div class="msg-footer">
+                <span class="msg-match"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Martinez · Refi</span>
+                <span class="msg-owner"><span class="msg-owner-avatar">R</span> Rio</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="chat-launcher">
+        <button class="chat-launcher-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MESSAGE TRIAGE -->
+  <div id="view-message" class="view hidden">
+    <div class="shell">
+      <div class="nav-rail">
+        <div class="nav-logo">FC</div>
+        <div class="nav-icon active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+        <div class="nav-spacer"></div>
+        <div class="nav-avatar">R</div>
+      </div>
+      
+      <div class="split">
+        <div class="board-panel">
+          <div class="board-header">
+            <span class="board-title">Orders</span>
+            <input type="text" class="search-input" placeholder="Search...">
+          </div>
+          <div class="filter-bar">
+            <div class="time-filters">
+              <button class="time-filter active">Today</button>
+              <button class="time-filter">Tomorrow</button>
+              <button class="time-filter">This Week</button>
+            </div>
+            <div class="status-filters">
+              <button class="status-filter active">All</button>
+              <button class="status-filter alert">Needs Action <span class="ct">3</span></button>
+            </div>
+          </div>
+          <div class="board-list">
+            <div class="row selected">
+              <div class="row-priority urgent"></div>
+              <div class="row-type">●</div>
+              <div class="row-main">
+                <div class="row-name">Martinez · Refi</div>
+                <div class="row-meta">Land Title · Tampa</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">2:00 PM</div></div>
+              <div class="row-status"><span class="tag urgent">Witness</span></div>
+              <div class="row-owner">R</div>
+            </div>
+            <div class="row">
+              <div class="row-priority action"></div>
+              <div class="row-type">●</div>
+              <div class="row-main">
+                <div class="row-name">Chen · Purchase</div>
+                <div class="row-meta">Tampa Bay Title</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">3:30 PM</div></div>
+              <div class="row-status"><span class="tag action">No notary</span></div>
+              <div class="row-owner unassigned">?</div>
+            </div>
+            <div class="row">
+              <div class="row-priority progress"></div>
+              <div class="row-type">●</div>
+              <div class="row-main">
+                <div class="row-name">Rodriguez · Purchase</div>
+                <div class="row-meta">Charlotte</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">10:00 AM</div></div>
+              <div class="row-status"><span class="tag live"><span class="pulse"></span> En route</span></div>
+              <div class="row-owner">R</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="inbox-panel" style="background: var(--bg-primary);">
+          <div class="inbox-header">
+            <span class="inbox-title">Inbox <span class="inbox-badge">5</span></span>
+          </div>
+          <div class="inbox-tabs">
+            <button class="inbox-tab active">Unassigned <span class="ct">3</span></button>
+            <button class="inbox-tab">Mine</button>
+            <button class="inbox-tab">All</button>
+          </div>
+          
+          <div class="msg-detail">
+            <div class="msg-detail-header">
+              <div>
+                <div class="msg-detail-from">Land Title Main</div>
+                <div class="msg-detail-subject">RE: Martinez Refi - Notary access</div>
+              </div>
+              <div class="msg-detail-sla">
+                <div class="msg-detail-sla-label">Waiting</div>
+                <div class="msg-detail-sla-time red">47m</div>
+              </div>
+            </div>
+            
+            <div class="msg-detail-body">
+              Hi team,<br><br>
+              Quick note - the notary will need to show their ID at the front desk to enter the building. Security is tight today. Please make sure they arrive 10 minutes early.<br><br>
+              Thanks,<br>Veronica
+            </div>
+            
+            <div class="msg-detail-match">
+              <div class="msg-detail-match-info">
+                <div class="msg-detail-match-label">Suggested match</div>
+                <div class="msg-detail-match-value">Martinez · Refi · Today 2:00 PM</div>
+              </div>
+              <button class="msg-detail-match-btn">Change</button>
+            </div>
+            
+            <div class="msg-detail-actions">
+              <button class="btn primary">Assign & Send to Notary</button>
+              <button class="btn">Assign Only</button>
+              <button class="btn">Take</button>
+              <button class="btn">Archive</button>
+            </div>
+            
+            <div class="msg-detail-options">
+              <label><input type="checkbox" checked> Notary must acknowledge</label>
+              <label><input type="checkbox"> Reply to sender</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WITH CHAT -->
+  <div id="view-chat" class="view hidden">
+    <div class="shell">
+      <div class="nav-rail">
+        <div class="nav-logo">FC</div>
+        <div class="nav-icon active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+        <div class="nav-spacer"></div>
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <div class="nav-avatar">R</div>
+      </div>
+      
+      <div class="split">
+        <div class="board-panel">
+          <div class="board-header">
+            <span class="board-title">Orders</span>
+            <input type="text" class="search-input" placeholder="Search...">
+          </div>
+          <div class="filter-bar">
+            <div class="time-filters">
+              <button class="time-filter active">Today</button>
+              <button class="time-filter">Tomorrow</button>
+              <button class="time-filter">This Week</button>
+            </div>
+            <div class="status-filters">
+              <button class="status-filter active">All <span class="ct">21</span></button>
+              <button class="status-filter alert">Needs Action <span class="ct">3</span></button>
+            </div>
+          </div>
+          <div class="board-list">
+            <div class="row">
+              <div class="row-priority urgent"></div>
+              <div class="row-type">●</div>
+              <div class="row-main">
+                <div class="row-name">Martinez · Refi</div>
+                <div class="row-meta">Land Title · Tampa</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">2:00 PM</div></div>
+              <div class="row-status"><span class="tag urgent">Witness</span></div>
+              <div class="row-owner">R</div>
+            </div>
+            <div class="row">
+              <div class="row-priority action"></div>
+              <div class="row-type">●</div>
+              <div class="row-main">
+                <div class="row-name">Chen · Purchase</div>
+                <div class="row-meta">Tampa Bay Title</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">3:30 PM</div></div>
+              <div class="row-status"><span class="tag action">No notary</span></div>
+              <div class="row-owner unassigned">?</div>
+            </div>
+            <div class="row">
+              <div class="row-priority progress"></div>
+              <div class="row-type">●</div>
+              <div class="row-main">
+                <div class="row-name">Rodriguez · Purchase</div>
+                <div class="row-meta">Charlotte</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">10:00 AM</div></div>
+              <div class="row-status"><span class="tag live"><span class="pulse"></span> En route</span></div>
+              <div class="row-owner">R</div>
+            </div>
+            <div class="row">
+              <div class="row-priority pending"></div>
+              <div class="row-type">●</div>
+              <div class="row-main">
+                <div class="row-name">Thompson · HELOC</div>
+                <div class="row-meta">Huntersville</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">11:00 AM</div></div>
+              <div class="row-status"></div>
+              <div class="row-owner">R</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="inbox-panel">
+          <div class="inbox-header">
+            <span class="inbox-title">Inbox <span class="inbox-badge">5</span></span>
+          </div>
+          <div class="inbox-tabs">
+            <button class="inbox-tab active">Unassigned <span class="ct">3</span></button>
+            <button class="inbox-tab">Mine <span class="ct">2</span></button>
+            <button class="inbox-tab">All</button>
+          </div>
+          <div class="inbox-list">
+            <div class="msg unread">
+              <div class="msg-top">
+                <span class="msg-sender">Land Title Main</span>
+                <span class="msg-sla red">47m</span>
+              </div>
+              <div class="msg-preview">Notary will need to show ID...</div>
+              <div class="msg-footer">
+                <span class="msg-match"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Martinez</span>
+                <span class="msg-time">47m</span>
+              </div>
+            </div>
+            <div class="msg unread">
+              <div class="msg-top">
+                <span class="msg-sender">Tampa Bay Title</span>
+                <span class="msg-sla amber">18m</span>
+              </div>
+              <div class="msg-preview">RE: Chen Purchase - wants 4pm</div>
+              <div class="msg-footer">
+                <span class="msg-match"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Chen</span>
+                <span class="msg-time">18m</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Contact list popup -->
+      <div class="chat-launcher">
+        <div class="chat-contacts">
+          <div class="chat-contacts-header">
+            Team
+            <button class="chat-contacts-close">×</button>
+          </div>
+          <div class="chat-contacts-list">
+            <div class="chat-contact">
+              <div class="chat-contact-avatar online">S</div>
+              <div class="chat-contact-name">Sue</div>
+            </div>
+            <div class="chat-contact">
+              <div class="chat-contact-avatar online">R</div>
+              <div class="chat-contact-name">Rio</div>
+            </div>
+            <div class="chat-contact">
+              <div class="chat-contact-avatar">B</div>
+              <div class="chat-contact-name">Brandon</div>
+            </div>
+            <div class="chat-contact">
+              <div class="chat-contact-avatar">A</div>
+              <div class="chat-contact-name">Alex</div>
+            </div>
+          </div>
+        </div>
+        <button class="chat-launcher-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+      </div>
+      
+      <!-- Open chat window -->
+      <div class="chat-window chat-window-1">
+        <div class="chat-header">
+          <div class="chat-header-info">
+            <div class="chat-header-avatar">S</div>
+            <div class="chat-header-name">Sue</div>
+          </div>
+          <div class="chat-header-actions">
+            <button class="chat-header-btn">−</button>
+            <button class="chat-header-btn">×</button>
+          </div>
+        </div>
+        <div class="chat-body">
+          <div class="chat-msg them">
+            Hey, can you take the Chen purchase? I'm swamped
+            <div class="chat-msg-time">2:15 PM</div>
+          </div>
+          <div class="chat-msg me">
+            Sure, assigning now
+            <div class="chat-msg-time">2:16 PM</div>
+          </div>
+          <div class="chat-msg them">
+            Thanks! They want to move it to 4pm btw
+            <div class="chat-msg-time">2:16 PM</div>
+          </div>
+          <div class="chat-msg me">
+            Got it, I'll handle the reschedule
+            <div class="chat-msg-time">2:17 PM</div>
+          </div>
+        </div>
+        <div class="chat-input">
+          <input type="text" placeholder="Message...">
+          <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALL CLEAR -->
+  <div id="view-clean" class="view hidden">
+    <div class="shell">
+      <div class="nav-rail">
+        <div class="nav-logo">FC</div>
+        <div class="nav-icon active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+        <div class="nav-spacer"></div>
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <div class="nav-avatar">R</div>
+      </div>
+      
+      <div class="split">
+        <div class="board-panel">
+          <div class="board-header">
+            <span class="board-title">Orders</span>
+            <input type="text" class="search-input" placeholder="Search...">
+          </div>
+          <div class="filter-bar">
+            <div class="time-filters">
+              <button class="time-filter active">Today</button>
+              <button class="time-filter">Tomorrow</button>
+              <button class="time-filter">This Week</button>
+              <button class="time-filter">Custom</button>
+            </div>
+            <div class="status-filters">
+              <button class="status-filter active">All <span class="ct">8</span></button>
+              <button class="status-filter">Needs Action <span class="ct">0</span></button>
+              <button class="status-filter">Post-Close <span class="ct">0</span></button>
+              <button class="status-filter">Mine <span class="ct">4</span></button>
+            </div>
+          </div>
+          <div class="board-list">
+            <div class="row">
+              <div class="row-priority progress"></div>
+              <div class="row-type">●</div>
+              <div class="row-main">
+                <div class="row-name">Rodriguez · Purchase</div>
+                <div class="row-meta">Land Title · Charlotte</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">10:00 AM</div></div>
+              <div class="row-status"><span class="tag live"><span class="pulse"></span> At table</span></div>
+              <div class="row-icons"></div>
+              <div class="row-owner">R</div>
+            </div>
+            <div class="row">
+              <div class="row-priority progress"></div>
+              <div class="row-type">●</div>
+              <div class="row-main">
+                <div class="row-name">Williams · Refi</div>
+                <div class="row-meta">First Title · Huntersville</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">11:00 AM</div></div>
+              <div class="row-status"><span class="tag live"><span class="pulse"></span> En route</span></div>
+              <div class="row-icons"></div>
+              <div class="row-owner">S</div>
+            </div>
+            <div class="row">
+              <div class="row-priority pending"></div>
+              <div class="row-type">●</div>
+              <div class="row-main">
+                <div class="row-name">Martinez · Refi</div>
+                <div class="row-meta">Land Title · Tampa</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">2:00 PM</div></div>
+              <div class="row-status"></div>
+              <div class="row-icons"></div>
+              <div class="row-owner">R</div>
+            </div>
+            <div class="row">
+              <div class="row-priority pending"></div>
+              <div class="row-type">●</div>
+              <div class="row-main">
+                <div class="row-name">Chen · Purchase</div>
+                <div class="row-meta">Tampa Bay Title · Tampa</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">3:30 PM</div></div>
+              <div class="row-status"></div>
+              <div class="row-icons"></div>
+              <div class="row-owner">S</div>
+            </div>
+            <div class="row">
+              <div class="row-priority pending"></div>
+              <div class="row-type">●</div>
+              <div class="row-main">
+                <div class="row-name">Thompson · HELOC</div>
+                <div class="row-meta">First Title · Huntersville</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">4:00 PM</div></div>
+              <div class="row-status"></div>
+              <div class="row-icons"></div>
+              <div class="row-owner">R</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="inbox-panel">
+          <div class="inbox-header">
+            <span class="inbox-title">Inbox <span class="inbox-badge zero">0</span></span>
+          </div>
+          <div class="inbox-tabs">
+            <button class="inbox-tab active">Unassigned <span class="ct">0</span></button>
+            <button class="inbox-tab">Mine <span class="ct">0</span></button>
+            <button class="inbox-tab">All</button>
+          </div>
+          <div class="inbox-empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <p>All caught up</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="chat-launcher">
+        <button class="chat-launcher-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showView(id) {
+      document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+      document.getElementById('view-' + id).classList.remove('hidden');
+      document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+  </script>
+</body>
+</html>

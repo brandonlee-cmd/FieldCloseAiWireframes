@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FieldCloseAi Notary Web Portal (Desktop) v2 — Final Wireframe</title>
+  <style>
+    :root {
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f5f5f5;
+      --color-background-tertiary: #e5e5e5;
+      --color-background-success: #dcfce7;
+      --color-background-warning: #fef3c7;
+      --color-background-info: #dbeafe;
+      --color-text-primary: #171717;
+      --color-text-secondary: #525252;
+      --color-text-tertiary: #a3a3a3;
+      --color-text-success: #15803d;
+      --color-text-warning: #a16207;
+      --color-text-info: #1d4ed8;
+      --color-border-tertiary: #e5e5e5;
+      --color-border-secondary: #d4d4d4;
+      --color-border-info: #93c5fd;
+      --border-radius-md: 8px;
+      --border-radius-lg: 12px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-background-primary: #171717;
+        --color-background-secondary: #262626;
+        --color-background-tertiary: #404040;
+        --color-background-success: #14532d;
+        --color-background-warning: #451a03;
+        --color-background-info: #1e3a5f;
+        --color-text-primary: #f5f5f5;
+        --color-text-secondary: #a3a3a3;
+        --color-text-tertiary: #737373;
+        --color-text-success: #4ade80;
+        --color-text-warning: #fbbf24;
+        --color-text-info: #60a5fa;
+        --color-border-tertiary: #404040;
+        --color-border-secondary: #525252;
+        --color-border-info: #1d4ed8;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--color-background-secondary); padding: 20px; color: var(--color-text-primary); }
+    h1 { font-size: 20px; margin-bottom: 8px; }
+    h2 { font-size: 14px; color: var(--color-text-secondary); font-weight: normal; margin-bottom: 20px; }
+    
+    .nav-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+    .nav-btn { padding: 8px 14px; font-size: 13px; background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); cursor: pointer; font-family: inherit; color: var(--color-text-primary); }
+    .nav-btn.active { background: var(--color-background-info); border-color: var(--color-border-info); color: var(--color-text-info); }
+    
+    .desktop-frame { background: var(--color-background-tertiary); border-radius: 12px; padding: 3px; max-width: 1100px; margin: 0 auto; }
+    .desktop-screen { background: var(--color-background-primary); border-radius: 10px; min-height: 650px; overflow: hidden; }
+    
+    .screen { display: none; }
+    .screen.active { display: block; }
+    
+    .desktop-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid var(--color-border-tertiary); }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #2D5A27 0%, #4A7C43 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: 600; }
+    .logo-text { font-size: 16px; font-weight: 500; }
+    .desktop-nav { display: flex; align-items: center; gap: 24px; }
+    .desktop-nav-item { font-size: 14px; color: var(--color-text-secondary); cursor: pointer; }
+    .desktop-nav-item:hover { color: var(--color-text-primary); }
+    .desktop-nav-item.active { color: var(--color-text-primary); font-weight: 500; }
+    .avatar { width: 36px; height: 36px; background: var(--color-background-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; }
+    
+    .content { padding: 24px; }
+    
+    .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+    .page-title { font-size: 24px; font-weight: 500; }
+    .page-subtitle { font-size: 14px; color: var(--color-text-secondary); margin-top: 4px; }
+    
+    .stats-row { display: flex; gap: 16px; }
+    .stat-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 14px 18px; text-align: center; min-width: 90px; }
+    .stat-value { font-size: 20px; font-weight: 500; }
+    .stat-value.success { color: var(--color-text-success); }
+    .stat-label { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+    
+    .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .section-title { font-size: 16px; font-weight: 500; }
+    
+    .filter-row { display: flex; gap: 8px; }
+    .filter-btn { padding: 6px 12px; font-size: 13px; background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); cursor: pointer; font-family: inherit; color: var(--color-text-secondary); }
+    .filter-btn.active { background: var(--color-background-secondary); color: var(--color-text-primary); }
+    
+    .date-label { font-size: 12px; font-weight: 500; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+    
+    .order-row { display: flex; align-items: center; padding: 16px; background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); margin-bottom: 8px; cursor: pointer; }
+    .order-row:hover { border-color: var(--color-border-secondary); }
+    .order-time { text-align: center; min-width: 60px; }
+    .order-time-value { font-size: 18px; font-weight: 500; }
+    .order-time-period { font-size: 12px; color: var(--color-text-secondary); }
+    .order-indicator { width: 3px; height: 48px; border-radius: 2px; margin: 0 16px; }
+    .order-indicator.active { background: var(--color-text-info); }
+    .order-indicator.pending { background: var(--color-border-tertiary); }
+    .order-details { flex: 1; }
+    .order-title { font-size: 15px; font-weight: 500; }
+    .order-meta { font-size: 14px; color: var(--color-text-secondary); margin-top: 2px; }
+    .order-actions { display: flex; align-items: center; gap: 16px; }
+    
+    .status-badge { font-size: 12px; padding: 4px 10px; background: var(--color-background-secondary); border-radius: 12px; color: var(--color-text-secondary); }
+    .status-badge.info { background: var(--color-background-info); color: var(--color-text-info); }
+    .status-badge.warning { background: var(--color-background-warning); color: var(--color-text-warning); }
+    .status-badge.success { background: var(--color-background-success); color: var(--color-text-success); }
+    
+    .order-fee { font-size: 16px; font-weight: 500; color: var(--color-text-success); }
+    .order-arrow { color: var(--color-text-tertiary); }
+    
+    .alert-card { background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 14px; margin-bottom: 12px; }
+    .alert-card.warning { border-left: 3px solid #D97706; }
+    .alert-card.danger { border-left: 3px solid #DC2626; }
+    .alert-content { display: flex; align-items: flex-start; gap: 12px; }
+    .alert-title { font-size: 14px; font-weight: 500; }
+    .alert-meta { font-size: 13px; color: var(--color-text-secondary); margin-top: 4px; }
+    
+    .quick-action { display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px; background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 14px; cursor: pointer; font-family: inherit; color: var(--color-text-primary); margin-bottom: 8px; }
+    .quick-action:hover { border-color: var(--color-border-secondary); }
+    
+    .link-btn { background: none; border: none; color: var(--color-text-info); font-size: 13px; padding: 0; cursor: pointer; font-family: inherit; margin-top: 8px; }
+    
+    .back-link { background: none; border: none; font-size: 14px; color: var(--color-text-secondary); cursor: pointer; font-family: inherit; padding: 0; margin-bottom: 16px; }
+    .back-link:hover { color: var(--color-text-primary); }
+    
+    .detail-section { margin-bottom: 24px; }
+    .detail-heading { font-size: 12px; font-weight: 500; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    
+    .card { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 14px; margin-bottom: 12px; }
+    .card-info { background: var(--color-background-info); border-left: 3px solid var(--color-text-info); }
+    .card-warning { background: var(--color-background-warning); border-left: 3px solid var(--color-text-warning); }
+    
+    .req-badge { font-size: 12px; padding: 6px 10px; background: var(--color-background-secondary); border-radius: 6px; color: var(--color-text-secondary); display: inline-block; margin: 4px 4px 0 0; }
+    
+    .doc-card { display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); }
+    .doc-icon { width: 48px; height: 48px; background: var(--color-background-info); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .doc-info { flex: 1; }
+    .doc-title { font-size: 15px; font-weight: 500; }
+    .doc-meta { font-size: 13px; color: var(--color-text-secondary); margin-top: 2px; }
+    
+    .btn-download { padding: 10px 16px; background: var(--color-text-info); color: white; border: none; border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; }
+    .btn-primary { padding: 12px 24px; background: var(--color-text-info); color: white; border: none; border-radius: var(--border-radius-md); font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit; }
+    .btn-secondary { padding: 8px 16px; background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 13px; cursor: pointer; font-family: inherit; color: var(--color-text-primary); }
+    
+    .upload-zone { border: 2px dashed var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 48px 24px; text-align: center; cursor: pointer; }
+    .upload-zone:hover { border-color: var(--color-border-info); background: var(--color-background-info); }
+    .upload-title { font-size: 18px; font-weight: 500; margin: 20px 0 8px; }
+    .upload-meta { font-size: 14px; color: var(--color-text-secondary); }
+    
+    .checklist-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+    .checklist-item input { width: 18px; height: 18px; }
+    .checklist-item label { font-size: 14px; }
+    
+    .earnings-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+    .earnings-stat { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 20px; }
+    .earnings-value { font-size: 28px; font-weight: 500; }
+    .earnings-label { font-size: 13px; color: var(--color-text-secondary); margin-top: 4px; }
+    
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; font-size: 12px; font-weight: 500; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; padding: 12px 16px; border-bottom: 1px solid var(--color-border-tertiary); }
+    td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid var(--color-border-tertiary); }
+    
+    .profile-layout { display: grid; grid-template-columns: 200px 1fr; gap: 32px; }
+    .profile-sidebar { text-align: center; }
+    .profile-avatar { width: 120px; height: 120px; background: var(--color-background-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 36px; font-weight: 500; }
+    .profile-stats { margin-top: 24px; }
+    .profile-stat-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--color-border-tertiary); }
+    .profile-stat-label { font-size: 13px; color: var(--color-text-secondary); }
+    .profile-stat-value { font-size: 14px; font-weight: 500; }
+    
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+    .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 14px; font-family: inherit; background: var(--color-background-primary); color: var(--color-text-primary); }
+    .form-group input:disabled { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+    .form-hint { font-size: 12px; color: var(--color-text-tertiary); margin-top: 4px; }
+    .form-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; margin-top: 8px; }
+    
+    .credential-card { background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 16px; margin-bottom: 12px; }
+    .credential-card.warning { border-left: 3px solid #D97706; background: #FFFBEB; }
+    .credential-header { display: flex; justify-content: space-between; align-items: flex-start; }
+    .credential-title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .credential-title { font-size: 16px; font-weight: 500; }
+    .credential-meta { font-size: 14px; color: var(--color-text-secondary); }
+    .credential-expires { font-size: 13px; color: var(--color-text-tertiary); margin-top: 4px; }
+    
+    .cred-badge { font-size: 11px; padding: 3px 8px; border-radius: 10px; font-weight: 500; }
+    .cred-badge.success { background: var(--color-background-success); color: var(--color-text-success); }
+    .cred-badge.warning { background: #FEF3C7; color: #D97706; }
+    
+    .instruction-card { background: var(--color-background-secondary); border-left: 3px solid var(--color-text-info); border-radius: var(--border-radius-md); padding: 14px; margin-bottom: 12px; }
+    .instruction-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .instruction-label { font-size: 12px; color: var(--color-text-tertiary); }
+    .instruction-ack { font-size: 11px; color: var(--color-text-success); }
+    .instruction-text { font-size: 14px; }
+    
+    .signer-status { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: var(--border-radius-md); margin-bottom: 16px; }
+    .signer-status.confirmed { background: var(--color-background-success); }
+    .signer-status.pending { background: var(--color-background-warning); }
+    .signer-status-icon { font-size: 16px; }
+    .signer-status-text { font-size: 14px; font-weight: 500; }
+    .signer-status.confirmed .signer-status-text { color: var(--color-text-success); }
+    .signer-status.pending .signer-status-text { color: var(--color-text-warning); }
+  </style>
+</head>
+<body>
+  <h1>FieldCloseAi — Notary Web Portal (Desktop) v2</h1>
+  <h2>Final wireframe for designer and engineering team — Updated to match mobile v5</h2>
+  
+  <div class="nav-container">
+    <button class="nav-btn active" onclick="showScreen('dashboard')">Dashboard</button>
+    <button class="nav-btn" onclick="showScreen('order-detail')">Order Detail</button>
+    <button class="nav-btn" onclick="showScreen('scanback')">Scanback Upload</button>
+    <button class="nav-btn" onclick="showScreen('earnings')">Earnings</button>
+    <button class="nav-btn" onclick="showScreen('profile')">Profile</button>
+    <button class="nav-btn" onclick="showScreen('credentials')">Credentials</button>
+  </div>
+
+  <div class="desktop-frame">
+    <div class="desktop-screen">
+
+      <!-- Desktop Header (shared) -->
+      <div class="desktop-header">
+        <div class="logo">
+          <div class="logo-icon">FC</div>
+          <span class="logo-text">Notary Portal</span>
+        </div>
+        <div class="desktop-nav">
+          <span class="desktop-nav-item active" onclick="showScreen('dashboard')">Dashboard</span>
+          <span class="desktop-nav-item" onclick="showScreen('earnings')">Earnings</span>
+          <span class="desktop-nav-item" onclick="showScreen('profile')">Profile</span>
+          <div class="avatar">SM</div>
+        </div>
+      </div>
+
+      <!-- ============== DASHBOARD ============== -->
+      <div id="screen-dashboard" class="screen active">
+        <div class="content">
+          <div class="page-header">
+            <div>
+              <p class="page-title">Welcome back, Sarah</p>
+              <p class="page-subtitle">Wednesday, April 19, 2026</p>
+            </div>
+            <div class="stats-row">
+              <div class="stat-card">
+                <p class="stat-value">$1,425</p>
+                <p class="stat-label">Balance</p>
+              </div>
+              <div class="stat-card">
+                <p class="stat-value">47</p>
+                <p class="stat-label">This month</p>
+              </div>
+              <div class="stat-card">
+                <p class="stat-value success">4.9</p>
+                <p class="stat-label">Rating</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2-1">
+            <!-- Left: Orders -->
+            <div>
+              <div class="section-header">
+                <span class="section-title">Your orders</span>
+                <div class="filter-row">
+                  <button class="filter-btn active">Upcoming</button>
+                  <button class="filter-btn">Completed</button>
+                  <button class="filter-btn">All</button>
+                </div>
+              </div>
+
+              <p class="date-label">Today</p>
+
+              <div class="order-row" onclick="showScreen('order-detail')">
+                <div class="order-time">
+                  <p class="order-time-value">10:00</p>
+                  <p class="order-time-period">AM</p>
+                </div>
+                <div class="order-indicator active"></div>
+                <div class="order-details">
+                  <p class="order-title">Purchase signing</p>
+                  <p class="order-meta">James & Maria Rodriguez · 1234 Oak St, Charlotte</p>
+                </div>
+                <div class="order-actions">
+                  <span class="status-badge info">Docs ready</span>
+                  <span class="order-fee">$150</span>
+                  <span class="order-arrow">→</span>
+                </div>
+              </div>
+
+              <div class="order-row">
+                <div class="order-time">
+                  <p class="order-time-value">2:30</p>
+                  <p class="order-time-period">PM</p>
+                </div>
+                <div class="order-indicator pending"></div>
+                <div class="order-details">
+                  <p class="order-title">Refinance signing</p>
+                  <p class="order-meta">Robert Martinez · 5678 Pine Ave, Matthews</p>
+                </div>
+                <div class="order-actions">
+                  <span class="status-badge warning">Awaiting docs</span>
+                  <span class="order-fee">$125</span>
+                  <span class="order-arrow">→</span>
+                </div>
+              </div>
+
+              <p class="date-label" style="margin-top: 24px;">Tomorrow</p>
+
+              <div class="order-row">
+                <div class="order-time">
+                  <p class="order-time-value">11:00</p>
+                  <p class="order-time-period">AM</p>
+                </div>
+                <div class="order-indicator pending"></div>
+                <div class="order-details">
+                  <p class="order-title">HELOC signing</p>
+                  <p class="order-meta">Lisa Thompson · 9012 Elm Dr, Huntersville</p>
+                </div>
+                <div class="order-actions">
+                  <span class="status-badge">Confirmed</span>
+                  <span class="order-fee">$100</span>
+                  <span class="order-arrow">→</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Alerts & Quick Actions -->
+            <div>
+              <p class="section-title" style="margin-bottom: 16px;">Needs attention</p>
+
+              <div class="alert-card warning">
+                <div class="alert-content">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                  <div>
+                    <p class="alert-title">Scanback pending</p>
+                    <p class="alert-meta">Apr 18 · Chen purchase signing</p>
+                    <button class="link-btn" onclick="showScreen('scanback')">Upload now →</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="alert-card danger">
+                <div class="alert-content">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  <div>
+                    <p class="alert-title">E&O expires in 12 days</p>
+                    <p class="alert-meta">Expires May 1, 2026</p>
+                    <button class="link-btn" onclick="showScreen('credentials')">Update credentials →</button>
+                  </div>
+                </div>
+              </div>
+
+              <p class="section-title" style="margin: 24px 0 16px;">Quick actions</p>
+              
+              <button class="quick-action" onclick="showScreen('earnings')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                View earnings
+              </button>
+              <button class="quick-action" onclick="showScreen('profile')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Edit profile
+              </button>
+              <button class="quick-action">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Get help
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============== ORDER DETAIL ============== -->
+      <div id="screen-order-detail" class="screen">
+        <div class="content">
+          <button class="back-link" onclick="showScreen('dashboard')">← Back to dashboard</button>
+
+          <div class="page-header">
+            <div>
+              <p class="page-title">Purchase signing</p>
+              <p class="page-subtitle">FC-2026-0419-00847 · Land Title Main</p>
+            </div>
+            <span style="font-size: 24px; font-weight: 500; color: var(--color-text-success);">$150</span>
+          </div>
+
+          <!-- Signer Confirmation Status -->
+          <div class="signer-status confirmed">
+            <span class="signer-status-icon">✓</span>
+            <span class="signer-status-text">Signer confirmed — appointment ready</span>
+          </div>
+
+          <div class="grid-2">
+            <!-- Left column -->
+            <div>
+              <div class="detail-section">
+                <p class="detail-heading">Schedule</p>
+                <p style="font-size: 16px; font-weight: 500;">Wednesday, April 19, 2026</p>
+                <p style="font-size: 15px; color: var(--color-text-secondary); margin-top: 4px;">10:00 AM</p>
+              </div>
+
+              <div class="detail-section">
+                <p class="detail-heading">Borrower</p>
+                <p style="font-size: 16px; font-weight: 500;">James & Maria Rodriguez</p>
+                <p style="font-size: 15px; color: var(--color-text-info); margin-top: 4px;">(704) 555-0123</p>
+              </div>
+
+              <div class="detail-section">
+                <p class="detail-heading">Signing location</p>
+                <p style="font-size: 15px;">1234 Oak Street</p>
+                <p style="font-size: 15px; color: var(--color-text-secondary); margin-top: 2px;">Charlotte, NC 28202</p>
+                <button class="link-btn">Open in Google Maps →</button>
+              </div>
+
+              <div class="detail-section">
+                <p class="detail-heading">Requirements</p>
+                <div style="margin-top: 4px;">
+                  <span class="req-badge">Blue ink only</span>
+                  <span class="req-badge">2 ID required</span>
+                  <span class="req-badge">Right of rescission</span>
+                </div>
+              </div>
+
+              <div class="detail-section">
+                <p class="detail-heading">Situation flags</p>
+                <div style="background: var(--color-background-warning); border-radius: var(--border-radius-md); padding: 10px; margin-top: 8px;">
+                  <p style="font-size: 13px; color: var(--color-text-warning);">⚠ Borrower is hard of hearing</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right column -->
+            <div>
+              <div class="detail-section">
+                <p class="detail-heading">Instructions from title</p>
+                <div class="instruction-card">
+                  <div class="instruction-header">
+                    <span class="instruction-label">Land Title Main</span>
+                    <span class="instruction-ack">✓ Acknowledged</span>
+                  </div>
+                  <p class="instruction-text">Please call borrower 30 min before arrival. Scanback required immediately after signing. Deliver originals to our office at 500 Main St by 5pm.</p>
+                </div>
+              </div>
+
+              <div class="detail-section">
+                <p class="detail-heading">Documents</p>
+                <div class="doc-card">
+                  <div class="doc-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-info)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  </div>
+                  <div class="doc-info">
+                    <p class="doc-title">Closing package</p>
+                    <p class="doc-meta">98 pages · PDF · 4.2 MB</p>
+                  </div>
+                  <button class="btn-download">Download</button>
+                </div>
+              </div>
+
+              <div class="detail-section">
+                <p class="detail-heading">Scanback</p>
+                <div style="background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 16px; border: 1px dashed var(--color-border-secondary); text-align: center; cursor: pointer;" onclick="showScreen('scanback')">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-tertiary)" stroke-width="2" style="margin: 0 auto 8px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <p style="font-size: 14px; color: var(--color-text-secondary);">Upload scanback after signing</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============== SCANBACK UPLOAD ============== -->
+      <div id="screen-scanback" class="screen">
+        <div class="content">
+          <button class="back-link" onclick="showScreen('order-detail')">← Back to order</button>
+
+          <p class="page-title">Upload scanback</p>
+          <p class="page-subtitle" style="margin-bottom: 24px;">FC-2026-0419-00847 · James & Maria Rodriguez</p>
+
+          <div style="max-width: 600px;">
+            <div class="upload-zone">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-tertiary)" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <p class="upload-title">Drop files here or click to upload</p>
+              <p class="upload-meta">PDF, JPG, or PNG · Max 50MB</p>
+            </div>
+
+            <div style="background: var(--color-background-warning); border-radius: var(--border-radius-md); padding: 12px; margin-top: 20px;">
+              <p style="font-size: 13px; color: var(--color-text-warning);">⚡ Scanback required immediately for this order</p>
+            </div>
+
+            <div style="margin-top: 24px;">
+              <p style="font-size: 14px; font-weight: 500; margin-bottom: 12px;">Scanback checklist</p>
+              <div class="checklist-item">
+                <input type="checkbox" id="check1">
+                <label for="check1">All pages scanned clearly and legibly</label>
+              </div>
+              <div class="checklist-item">
+                <input type="checkbox" id="check2">
+                <label for="check2">All signatures and initials visible</label>
+              </div>
+              <div class="checklist-item">
+                <input type="checkbox" id="check3">
+                <label for="check3">Notary stamp and seal clear</label>
+              </div>
+              <div class="checklist-item">
+                <input type="checkbox" id="check4">
+                <label for="check4">Page order matches original documents</label>
+              </div>
+            </div>
+
+            <button class="btn-primary" style="margin-top: 24px;">Submit scanback</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============== EARNINGS ============== -->
+      <div id="screen-earnings" class="screen">
+        <div class="content">
+          <p class="page-title" style="margin-bottom: 24px;">Earnings</p>
+
+          <div class="earnings-grid">
+            <div class="earnings-stat">
+              <p class="earnings-value">$1,425</p>
+              <p class="earnings-label">Available balance</p>
+            </div>
+            <div class="earnings-stat">
+              <p class="earnings-value">$5,125</p>
+              <p class="earnings-label">This month</p>
+            </div>
+            <div class="earnings-stat">
+              <p class="earnings-value">47</p>
+              <p class="earnings-label">Signings this month</p>
+            </div>
+            <div class="earnings-stat">
+              <p class="earnings-value">$109</p>
+              <p class="earnings-label">Avg per signing</p>
+            </div>
+          </div>
+
+          <div class="section-header" style="margin-bottom: 16px;">
+            <span class="section-title">Transaction history</span>
+            <button class="filter-btn">Download CSV</button>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Order</th>
+                <th style="text-align: right;">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Apr 18</td>
+                <td>Purchase signing</td>
+                <td style="color: var(--color-text-secondary);">FC-2026-0418-00821</td>
+                <td style="text-align: right; color: var(--color-text-success); font-weight: 500;">+$150</td>
+              </tr>
+              <tr>
+                <td>Apr 17</td>
+                <td>Refinance signing</td>
+                <td style="color: var(--color-text-secondary);">FC-2026-0417-00819</td>
+                <td style="text-align: right; color: var(--color-text-success); font-weight: 500;">+$125</td>
+              </tr>
+              <tr>
+                <td>Apr 16</td>
+                <td>HELOC signing</td>
+                <td style="color: var(--color-text-secondary);">FC-2026-0416-00815</td>
+                <td style="text-align: right; color: var(--color-text-success); font-weight: 500;">+$100</td>
+              </tr>
+              <tr>
+                <td>Apr 16</td>
+                <td>Purchase signing + witness</td>
+                <td style="color: var(--color-text-secondary);">FC-2026-0416-00812</td>
+                <td style="text-align: right; color: var(--color-text-success); font-weight: 500;">+$175</td>
+              </tr>
+              <tr style="background: var(--color-background-secondary);">
+                <td>Apr 7</td>
+                <td>Payout — Direct deposit</td>
+                <td style="color: var(--color-text-secondary);">••••4521</td>
+                <td style="text-align: right; font-weight: 500;">−$2,850</td>
+              </tr>
+              <tr>
+                <td>Apr 5</td>
+                <td>Purchase signing</td>
+                <td style="color: var(--color-text-secondary);">FC-2026-0405-00798</td>
+                <td style="text-align: right; color: var(--color-text-success); font-weight: 500;">+$150</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ============== PROFILE ============== -->
+      <div id="screen-profile" class="screen">
+        <div class="content">
+          <p class="page-title" style="margin-bottom: 24px;">Profile</p>
+
+          <div class="profile-layout">
+            <div class="profile-sidebar">
+              <div class="profile-avatar">SM</div>
+              <button class="btn-secondary" style="width: 100%;">Change photo</button>
+
+              <div class="profile-stats">
+                <div class="profile-stat-row">
+                  <span class="profile-stat-label">Rating</span>
+                  <span class="profile-stat-value">4.9 ★</span>
+                </div>
+                <div class="profile-stat-row">
+                  <span class="profile-stat-label">Acceptance</span>
+                  <span class="profile-stat-value">94%</span>
+                </div>
+                <div class="profile-stat-row">
+                  <span class="profile-stat-label">Cancellation</span>
+                  <span class="profile-stat-value">2%</span>
+                </div>
+                <div class="profile-stat-row" style="border-bottom: none;">
+                  <span class="profile-stat-label">Member since</span>
+                  <span class="profile-stat-value">2019</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="max-width: 500px;">
+              <div class="form-group">
+                <label>Full legal name</label>
+                <input type="text" value="Sarah Mitchell" disabled>
+                <p class="form-hint">Contact support to change your legal name</p>
+              </div>
+
+              <div class="form-group">
+                <label>Email address</label>
+                <input type="email" value="sarah.mitchell@email.com">
+              </div>
+
+              <div class="form-group">
+                <label>Phone number</label>
+                <input type="tel" value="(704) 555-0147">
+              </div>
+
+              <div class="form-group">
+                <label>Address</label>
+                <input type="text" value="456 Maple Lane">
+                <div class="form-grid">
+                  <input type="text" value="Charlotte">
+                  <input type="text" value="NC">
+                  <input type="text" value="28205">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Payment preference</label>
+                <select>
+                  <option selected>Standard payout (7th of month) — No fee</option>
+                  <option>Express payout (weekly) — 3% fee</option>
+                  <option>Instant payout (daily) — 5% fee</option>
+                </select>
+              </div>
+
+              <button class="btn-primary" style="margin-top: 24px;">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============== CREDENTIALS ============== -->
+      <div id="screen-credentials" class="screen">
+        <div class="content">
+          <p class="page-title">Credentials</p>
+          <p class="page-subtitle" style="margin-bottom: 24px;">Keep your credentials up to date to continue receiving orders.</p>
+
+          <div style="max-width: 700px;">
+            <!-- E&O Insurance - Warning -->
+            <div class="credential-card warning">
+              <div class="credential-header">
+                <div>
+                  <div class="credential-title-row">
+                    <span class="credential-title">E&O Insurance</span>
+                    <span class="cred-badge warning">Expires in 12 days</span>
+                  </div>
+                  <p class="credential-meta">State Farm · $100,000 coverage</p>
+                  <p class="credential-expires">Expires: May 1, 2026</p>
+                </div>
+                <button class="btn-secondary">Update</button>
+              </div>
+            </div>
+
+            <!-- Notary Commission - Good -->
+            <div class="credential-card">
+              <div class="credential-header">
+                <div>
+                  <div class="credential-title-row">
+                    <span class="credential-title">Notary Commission</span>
+                    <span class="cred-badge success">Valid</span>
+                  </div>
+                  <p class="credential-meta">North Carolina · #12345678</p>
+                  <p class="credential-expires">Expires: December 15, 2027</p>
+                </div>
+                <button class="btn-secondary">View</button>
+              </div>
+            </div>
+
+            <!-- Background Check - Good -->
+            <div class="credential-card">
+              <div class="credential-header">
+                <div>
+                  <div class="credential-title-row">
+                    <span class="credential-title">Background Check</span>
+                    <span class="cred-badge success">Valid</span>
+                  </div>
+                  <p class="credential-meta">National background check</p>
+                  <p class="credential-expires">Completed: January 10, 2025</p>
+                </div>
+                <button class="btn-secondary">View</button>
+              </div>
+            </div>
+
+            <!-- W-9 - Good -->
+            <div class="credential-card">
+              <div class="credential-header">
+                <div>
+                  <div class="credential-title-row">
+                    <span class="credential-title">W-9</span>
+                    <span class="cred-badge success">On file</span>
+                  </div>
+                  <p class="credential-meta">Tax year 2026</p>
+                  <p class="credential-expires">Submitted: January 5, 2026</p>
+                </div>
+                <button class="btn-secondary">Update</button>
+              </div>
+            </div>
+
+            <!-- Optional Certifications -->
+            <p class="section-title" style="margin: 32px 0 16px;">Optional certifications</p>
+
+            <div class="credential-card">
+              <div class="credential-header">
+                <div>
+                  <div class="credential-title-row">
+                    <span class="credential-title">NNA Certification</span>
+                    <span class="cred-badge success">Verified</span>
+                  </div>
+                  <p class="credential-meta">National Notary Association</p>
+                </div>
+                <button class="btn-secondary">View</button>
+              </div>
+            </div>
+
+            <div class="credential-card" style="border-style: dashed;">
+              <div class="credential-header">
+                <div>
+                  <span class="credential-title" style="color: var(--color-text-secondary);">RON Certification</span>
+                  <p class="credential-meta" style="color: var(--color-text-tertiary);">Not added</p>
+                </div>
+                <button class="btn-secondary">Add</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-' + screenId).classList.add('active');
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    }
+  </script>
+</body>
+</html>

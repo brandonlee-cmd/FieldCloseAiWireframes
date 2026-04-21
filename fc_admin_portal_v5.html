@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FieldCloseAi Admin Portal v5 — Calls</title>
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8f8f8;
+      --bg-tertiary: #f0f0f0;
+      --text-primary: #1a1a1a;
+      --text-secondary: #666;
+      --text-tertiary: #999;
+      --border: #e5e5e5;
+      --border-light: #f0f0f0;
+      --teal: #0D9488;
+      --teal-light: #f0fdfa;
+      --red: #dc2626;
+      --red-light: #fef2f2;
+      --amber: #d97706;
+      --amber-light: #fffbeb;
+      --green: #16a34a;
+      --green-light: #f0fdf4;
+      --blue: #2563eb;
+      --blue-light: #eff6ff;
+      --purple: #7c3aed;
+      --purple-light: #f5f3ff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-primary: #1a1a1a;
+        --bg-secondary: #222;
+        --bg-tertiary: #2a2a2a;
+        --text-primary: #f5f5f5;
+        --text-secondary: #999;
+        --text-tertiary: #666;
+        --border: #333;
+        --border-light: #2a2a2a;
+        --teal: #2dd4bf;
+        --teal-light: #1a2e2b;
+        --red: #f87171;
+        --red-light: #2e1a1a;
+        --amber: #fbbf24;
+        --amber-light: #2e2a1a;
+        --green: #4ade80;
+        --green-light: #1a2e1f;
+        --blue: #60a5fa;
+        --blue-light: #1a2440;
+        --purple: #a78bfa;
+        --purple-light: #2e1a40;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg-secondary); color: var(--text-primary); font-size: 14px; line-height: 1.5; }
+    
+    .page-header { padding: 20px 20px 12px; }
+    .page-header h1 { font-size: 17px; font-weight: 500; margin-bottom: 2px; }
+    .page-header p { font-size: 13px; color: var(--text-secondary); }
+    
+    .view-tabs { display: flex; gap: 8px; padding: 0 20px 16px; flex-wrap: wrap; }
+    .view-tab { padding: 7px 14px; font-size: 13px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text-primary); }
+    .view-tab.active { background: var(--teal); color: white; border-color: var(--teal); }
+
+    .shell { display: flex; height: 85vh; margin: 0 20px 20px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; position: relative; }
+    .shell.has-call { margin-top: 0; height: calc(85vh - 52px); }
+    
+    .nav-rail { width: 52px; background: var(--bg-secondary); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 14px 0; flex-shrink: 0; }
+    .nav-logo { width: 30px; height: 30px; background: var(--teal); border-radius: 7px; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; font-weight: 600; margin-bottom: 20px; }
+    .nav-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; color: var(--text-tertiary); margin-bottom: 4px; position: relative; }
+    .nav-icon:hover { background: var(--bg-tertiary); color: var(--text-secondary); }
+    .nav-icon.active { background: var(--bg-primary); color: var(--teal); }
+    .nav-icon svg { width: 18px; height: 18px; }
+    .nav-spacer { flex: 1; }
+    .nav-avatar { width: 28px; height: 28px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: var(--teal); }
+
+    .split { display: flex; flex: 1; overflow: hidden; }
+    .board-panel { flex: 1; display: flex; flex-direction: column; border-right: 1px solid var(--border); min-width: 0; }
+    .board-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .board-title { font-size: 15px; font-weight: 500; }
+    .board-list { flex: 1; overflow-y: auto; padding: 12px; }
+    
+    .row { display: flex; align-items: center; padding: 11px 12px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 7px; margin-bottom: 6px; cursor: pointer; gap: 10px; }
+    .row:hover { border-color: var(--text-tertiary); }
+    .row.selected { border-color: var(--teal); background: var(--teal-light); }
+    .row.on-call { border-color: var(--green); background: var(--green-light); }
+    
+    .row-priority { width: 3px; height: 32px; border-radius: 2px; flex-shrink: 0; }
+    .row-priority.urgent { background: var(--red); }
+    .row-priority.action { background: var(--amber); }
+    .row-priority.progress { background: var(--teal); }
+    .row-priority.pending { background: var(--border); }
+    
+    .row-main { flex: 1; min-width: 0; }
+    .row-name { font-size: 13px; font-weight: 500; }
+    .row-meta { font-size: 12px; color: var(--text-secondary); }
+    
+    .row-time { text-align: right; flex-shrink: 0; min-width: 60px; }
+    .row-time-main { font-size: 13px; font-weight: 500; }
+    
+    .tag { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; padding: 3px 8px; border-radius: 10px; font-weight: 500; }
+    .tag.urgent { background: var(--red-light); color: var(--red); }
+    .tag.action { background: var(--amber-light); color: var(--amber); }
+    .tag.live { background: var(--green-light); color: var(--green); }
+    .tag.call { background: var(--purple-light); color: var(--purple); }
+    .tag .pulse { width: 5px; height: 5px; background: currentColor; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    @keyframes ring { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+    
+    .row-phone { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-tertiary); }
+    .row-phone:hover { background: var(--teal-light); color: var(--teal); }
+    .row-phone svg { width: 14px; height: 14px; }
+    
+    .row-owner { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: var(--text-secondary); }
+
+    .inbox-panel { width: 320px; display: flex; flex-direction: column; background: var(--bg-secondary); flex-shrink: 0; }
+    .inbox-header { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 500; }
+    .inbox-list { flex: 1; overflow-y: auto; }
+    .msg { padding: 12px 16px; border-bottom: 1px solid var(--border-light); cursor: pointer; background: var(--bg-primary); }
+    .msg:hover { background: var(--bg-secondary); }
+    .msg-sender { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+    .msg-preview { font-size: 12px; color: var(--text-secondary); }
+
+    .btn { padding: 8px 14px; font-size: 12px; border-radius: 5px; cursor: pointer; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-primary); font-weight: 500; }
+    .btn.success { background: var(--green); color: white; border-color: var(--green); }
+    .btn.danger { background: var(--red); color: white; border-color: var(--red); }
+
+    /* ===== INCOMING CALL MODAL ===== */
+    .call-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; }
+    .view { position: relative; }
+    .call-modal { width: 380px; background: var(--bg-primary); border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
+    .call-modal-header { padding: 20px 24px; background: var(--green); color: white; text-align: center; }
+    .call-modal-header.unknown { background: var(--amber); }
+    .call-modal-ring { width: 56px; height: 56px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; animation: ring 0.4s ease infinite; }
+    .call-modal-ring svg { width: 28px; height: 28px; }
+    .call-modal-title { font-size: 18px; font-weight: 500; }
+    .call-modal-subtitle { font-size: 14px; opacity: 0.9; margin-top: 4px; }
+    
+    .call-modal-body { padding: 20px 24px; }
+    .call-caller { display: flex; align-items: center; gap: 14px; padding: 14px; background: var(--bg-secondary); border-radius: 10px; margin-bottom: 14px; }
+    .call-caller-avatar { width: 44px; height: 44px; background: var(--bg-tertiary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: var(--text-secondary); }
+    .call-caller-name { font-size: 15px; font-weight: 500; }
+    .call-caller-role { font-size: 13px; color: var(--text-secondary); }
+    .call-caller-phone { font-size: 12px; color: var(--text-tertiary); }
+    
+    .call-order { padding: 12px 14px; background: var(--teal-light); border: 1px solid var(--teal); border-radius: 10px; margin-bottom: 14px; }
+    .call-order.no-match { background: var(--amber-light); border-color: var(--amber); }
+    .call-order-label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .call-order-name { font-size: 14px; font-weight: 500; color: var(--teal); }
+    .call-order.no-match .call-order-name { color: var(--amber); }
+    .call-order-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    
+    .call-ivr-note { padding: 10px 12px; background: var(--bg-secondary); border-radius: 6px; font-size: 12px; color: var(--text-secondary); margin-bottom: 16px; }
+    .call-ivr-note strong { color: var(--text-primary); }
+    
+    .call-modal-actions { display: flex; gap: 10px; }
+    .call-modal-actions .btn { flex: 1; padding: 12px; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .call-modal-actions .btn svg { width: 18px; height: 18px; }
+
+    /* ===== ACTIVE CALL BAR ===== */
+    .active-call-bar { height: 52px; background: var(--green); color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; margin: 0 20px; border-radius: 10px 10px 0 0; }
+    .call-bar-left { display: flex; align-items: center; gap: 12px; }
+    .call-bar-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .call-bar-icon svg { width: 16px; height: 16px; }
+    .call-bar-name { font-size: 14px; font-weight: 500; }
+    .call-bar-meta { font-size: 12px; opacity: 0.85; }
+    
+    .call-bar-center { display: flex; align-items: center; gap: 12px; }
+    .call-bar-timer { font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .call-bar-order { padding: 4px 12px; background: rgba(255,255,255,0.2); border-radius: 12px; font-size: 12px; cursor: pointer; }
+    .call-bar-order:hover { background: rgba(255,255,255,0.3); }
+    
+    .call-bar-right { display: flex; align-items: center; gap: 8px; }
+    .call-bar-btn { width: 36px; height: 36px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); color: white; }
+    .call-bar-btn:hover { background: rgba(255,255,255,0.3); }
+    .call-bar-btn svg { width: 18px; height: 18px; }
+    .call-bar-btn.end { background: var(--red); }
+    .call-bar-btn.end:hover { background: #b91c1c; }
+
+    /* ===== ORDER DETAIL PANEL ===== */
+    .detail-panel { width: 420px; background: var(--bg-primary); border-left: 1px solid var(--border); display: flex; flex-direction: column; }
+    .detail-header { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+    .detail-title { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
+    .detail-meta { font-size: 12px; color: var(--text-secondary); }
+    .detail-content { flex: 1; overflow-y: auto; padding: 16px 20px; }
+    .detail-section { margin-bottom: 20px; }
+    .detail-section-title { font-size: 10px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+    
+    .activity-item { display: flex; gap: 10px; padding: 8px 0; font-size: 13px; }
+    .activity-dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+    .activity-dot.call { background: var(--purple); }
+    .activity-dot.msg { background: var(--teal); }
+    .activity-dot.done { background: var(--green); }
+    .activity-time { font-size: 11px; color: var(--text-tertiary); }
+    
+    .call-log-item { padding: 12px; background: var(--purple-light); border-radius: 8px; margin-bottom: 8px; }
+    .call-log-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .call-log-type { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--purple); }
+    .call-log-type svg { width: 14px; height: 14px; }
+    .call-log-duration { font-size: 12px; color: var(--text-secondary); }
+    .call-log-meta { font-size: 12px; color: var(--text-secondary); }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="page-header">
+    <h1>FieldCloseAi — Admin Portal v5</h1>
+    <p>Inbound calls · IVR routing · Click-to-call · Call logging</p>
+  </div>
+  
+  <div class="view-tabs">
+    <button class="view-tab active" onclick="showView('incoming-title')">Incoming: Title Agent</button>
+    <button class="view-tab" onclick="showView('incoming-notary')">Incoming: Notary</button>
+    <button class="view-tab" onclick="showView('incoming-unknown')">Incoming: Unknown</button>
+    <button class="view-tab" onclick="showView('active-call')">Active Call</button>
+    <button class="view-tab" onclick="showView('call-log')">Order Call Log</button>
+  </div>
+
+  <!-- INCOMING: TITLE AGENT -->
+  <div id="view-incoming-title" class="view" style="position: relative; min-height: 85vh;">
+    <!-- Background shell (dimmed) -->
+    <div class="shell" style="opacity: 0.3; pointer-events: none;">
+      <div class="nav-rail">
+        <div class="nav-logo">FC</div>
+        <div class="nav-icon active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div class="nav-spacer"></div>
+        <div class="nav-avatar">R</div>
+      </div>
+      <div class="split">
+        <div class="board-panel">
+          <div class="board-header"><span class="board-title">Orders</span></div>
+          <div class="board-list">
+            <div class="row"><div class="row-priority pending"></div><div class="row-main"><div class="row-name">Martinez · Refi</div><div class="row-meta">Land Title · Tampa</div></div><div class="row-time"><div class="row-time-main">2:00 PM</div></div></div>
+            <div class="row"><div class="row-priority pending"></div><div class="row-main"><div class="row-name">Chen · Purchase</div><div class="row-meta">Tampa Bay Title</div></div><div class="row-time"><div class="row-time-main">3:30 PM</div></div></div>
+          </div>
+        </div>
+        <div class="inbox-panel"><div class="inbox-header">Inbox</div></div>
+      </div>
+    </div>
+    <!-- Modal overlay -->
+    <div class="call-overlay" style="position: absolute; top: 0; left: 20px; right: 20px; bottom: 20px; border-radius: 10px;">
+      <div class="call-modal">
+        <div class="call-modal-header">
+          <div class="call-modal-ring">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </div>
+          <div class="call-modal-title">Incoming Call</div>
+          <div class="call-modal-subtitle">Ringing...</div>
+        </div>
+        <div class="call-modal-body">
+          <div class="call-caller">
+            <div class="call-caller-avatar">VS</div>
+            <div>
+              <div class="call-caller-name">Veronica Simmons</div>
+              <div class="call-caller-role">Title Agent · Land Title Main</div>
+              <div class="call-caller-phone">(704) 555-0188</div>
+            </div>
+          </div>
+          <div class="call-order">
+            <div class="call-order-label">Calling about</div>
+            <div class="call-order-name">Martinez · Refinance</div>
+            <div class="call-order-meta">Today at 2:00 PM · Tampa</div>
+          </div>
+          <div class="call-ivr-note">
+            <strong>IVR:</strong> Caller said "Martinez" — matched to file FC-2026-0420-00892
+          </div>
+          <div class="call-modal-actions">
+            <button class="btn danger">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v.01M15 9v.01M9 15h6"/></svg>
+              Decline
+            </button>
+            <button class="btn success">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              Answer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INCOMING: NOTARY -->
+  <div id="view-incoming-notary" class="view hidden" style="position: relative; min-height: 85vh;">
+    <!-- Background shell (dimmed) -->
+    <div class="shell" style="opacity: 0.3; pointer-events: none;">
+      <div class="nav-rail">
+        <div class="nav-logo">FC</div>
+        <div class="nav-icon active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div class="nav-spacer"></div>
+        <div class="nav-avatar">R</div>
+      </div>
+      <div class="split">
+        <div class="board-panel">
+          <div class="board-header"><span class="board-title">Orders</span></div>
+          <div class="board-list">
+            <div class="row"><div class="row-priority pending"></div><div class="row-main"><div class="row-name">Martinez · Refi</div><div class="row-meta">Land Title · Tampa</div></div><div class="row-time"><div class="row-time-main">2:00 PM</div></div></div>
+          </div>
+        </div>
+        <div class="inbox-panel"><div class="inbox-header">Inbox</div></div>
+      </div>
+    </div>
+    <!-- Modal overlay -->
+    <div class="call-overlay" style="position: absolute; top: 0; left: 20px; right: 20px; bottom: 20px; border-radius: 10px;">
+      <div class="call-modal">
+        <div class="call-modal-header">
+          <div class="call-modal-ring">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </div>
+          <div class="call-modal-title">Incoming Call</div>
+          <div class="call-modal-subtitle">Ringing...</div>
+        </div>
+        <div class="call-modal-body">
+          <div class="call-caller">
+            <div class="call-caller-avatar">MG</div>
+            <div>
+              <div class="call-caller-name">Maria Gonzalez</div>
+              <div class="call-caller-role">Notary · Tier 1</div>
+              <div class="call-caller-phone">(813) 555-0234</div>
+            </div>
+          </div>
+          <div class="call-order">
+            <div class="call-order-label">Calling about (today's signing)</div>
+            <div class="call-order-name">Martinez · Refinance</div>
+            <div class="call-order-meta">Today at 2:00 PM · Tampa</div>
+          </div>
+          <div class="call-ivr-note">
+            <strong>IVR:</strong> Caller selected "today's signings" → pressed 1 for Martinez
+          </div>
+          <div class="call-modal-actions">
+            <button class="btn danger">Decline</button>
+            <button class="btn success">Answer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INCOMING: UNKNOWN -->
+  <div id="view-incoming-unknown" class="view hidden" style="position: relative; min-height: 85vh;">
+    <!-- Background shell (dimmed) -->
+    <div class="shell" style="opacity: 0.3; pointer-events: none;">
+      <div class="nav-rail">
+        <div class="nav-logo">FC</div>
+        <div class="nav-icon active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div class="nav-spacer"></div>
+        <div class="nav-avatar">R</div>
+      </div>
+      <div class="split">
+        <div class="board-panel">
+          <div class="board-header"><span class="board-title">Orders</span></div>
+          <div class="board-list">
+            <div class="row"><div class="row-priority pending"></div><div class="row-main"><div class="row-name">Martinez · Refi</div><div class="row-meta">Land Title · Tampa</div></div><div class="row-time"><div class="row-time-main">2:00 PM</div></div></div>
+          </div>
+        </div>
+        <div class="inbox-panel"><div class="inbox-header">Inbox</div></div>
+      </div>
+    </div>
+    <!-- Modal overlay -->
+    <div class="call-overlay" style="position: absolute; top: 0; left: 20px; right: 20px; bottom: 20px; border-radius: 10px;">
+      <div class="call-modal">
+        <div class="call-modal-header unknown">
+          <div class="call-modal-ring">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </div>
+          <div class="call-modal-title">Incoming Call</div>
+          <div class="call-modal-subtitle">Unknown Caller</div>
+        </div>
+        <div class="call-modal-body">
+          <div class="call-caller">
+            <div class="call-caller-avatar">?</div>
+            <div>
+              <div class="call-caller-name">Unknown Caller</div>
+              <div class="call-caller-role">Phone not in system</div>
+              <div class="call-caller-phone">(407) 555-9999</div>
+            </div>
+          </div>
+          <div class="call-order no-match">
+            <div class="call-order-label">No order identified</div>
+            <div class="call-order-name">Caller pressed 0 for operator</div>
+            <div class="call-order-meta">Did not enter file number</div>
+          </div>
+          <div class="call-ivr-note">
+            <strong>IVR:</strong> Phone not recognized. Caller pressed 0 to speak with someone.
+          </div>
+          <div class="call-modal-actions">
+            <button class="btn danger">Decline</button>
+            <button class="btn success">Answer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVE CALL -->
+  <div id="view-active-call" class="view hidden">
+    <div class="active-call-bar">
+      <div class="call-bar-left">
+        <div class="call-bar-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </div>
+        <div>
+          <div class="call-bar-name">Veronica Simmons</div>
+          <div class="call-bar-meta">Title Agent · Land Title Main</div>
+        </div>
+      </div>
+      <div class="call-bar-center">
+        <div class="call-bar-timer">02:34</div>
+        <div class="call-bar-order">Martinez · Refi</div>
+      </div>
+      <div class="call-bar-right">
+        <button class="call-bar-btn" title="Mute">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+        </button>
+        <button class="call-bar-btn" title="Hold">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        </button>
+        <button class="call-bar-btn end" title="End Call">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.5 16.5L19 19"/></svg>
+        </button>
+      </div>
+    </div>
+    
+    <div class="shell has-call">
+      <div class="nav-rail">
+        <div class="nav-logo">FC</div>
+        <div class="nav-icon active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div class="nav-spacer"></div>
+        <div class="nav-avatar">R</div>
+      </div>
+      <div class="split">
+        <div class="board-panel">
+          <div class="board-header">
+            <span class="board-title">Orders</span>
+          </div>
+          <div class="board-list">
+            <div class="row on-call">
+              <div class="row-priority urgent"></div>
+              <div class="row-main">
+                <div class="row-name">Martinez · Refi</div>
+                <div class="row-meta">Land Title · Tampa</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">2:00 PM</div></div>
+              <div><span class="tag call"><span class="pulse"></span> On call</span></div>
+              <div class="row-phone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+              <div class="row-owner">R</div>
+            </div>
+            <div class="row">
+              <div class="row-priority action"></div>
+              <div class="row-main">
+                <div class="row-name">Chen · Purchase</div>
+                <div class="row-meta">Tampa Bay Title</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">3:30 PM</div></div>
+              <div><span class="tag action">No notary</span></div>
+              <div class="row-phone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+              <div class="row-owner">S</div>
+            </div>
+            <div class="row">
+              <div class="row-priority progress"></div>
+              <div class="row-main">
+                <div class="row-name">Rodriguez · Purchase</div>
+                <div class="row-meta">Land Title · Charlotte</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">10:00 AM</div></div>
+              <div><span class="tag live"><span class="pulse"></span> En route</span></div>
+              <div class="row-phone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+              <div class="row-owner">R</div>
+            </div>
+          </div>
+        </div>
+        <div class="inbox-panel">
+          <div class="inbox-header">Inbox</div>
+          <div class="inbox-list">
+            <div class="msg">
+              <div class="msg-sender">Tampa Bay Title</div>
+              <div class="msg-preview">RE: Chen Purchase - wants 4pm</div>
+            </div>
+            <div class="msg">
+              <div class="msg-sender">First Title Co</div>
+              <div class="msg-preview">Closing early Friday at 3pm...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORDER CALL LOG -->
+  <div id="view-call-log" class="view hidden">
+    <div class="shell">
+      <div class="nav-rail">
+        <div class="nav-logo">FC</div>
+        <div class="nav-icon active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div class="nav-spacer"></div>
+        <div class="nav-avatar">R</div>
+      </div>
+      <div class="split">
+        <div class="board-panel">
+          <div class="board-header">
+            <span class="board-title">Orders</span>
+          </div>
+          <div class="board-list">
+            <div class="row selected">
+              <div class="row-priority urgent"></div>
+              <div class="row-main">
+                <div class="row-name">Martinez · Refi</div>
+                <div class="row-meta">Land Title · Tampa</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">2:00 PM</div></div>
+              <div><span class="tag urgent">Witness</span></div>
+              <div class="row-phone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+              <div class="row-owner">R</div>
+            </div>
+            <div class="row">
+              <div class="row-priority pending"></div>
+              <div class="row-main">
+                <div class="row-name">Chen · Purchase</div>
+                <div class="row-meta">Tampa Bay Title</div>
+              </div>
+              <div class="row-time"><div class="row-time-main">3:30 PM</div></div>
+              <div></div>
+              <div class="row-phone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+              <div class="row-owner">S</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Order detail with call log -->
+        <div class="detail-panel">
+          <div class="detail-header">
+            <div class="detail-title">Martinez · Refinance</div>
+            <div class="detail-meta">Land Title Main · Today 2:00 PM · FC-2026-0420-00892</div>
+          </div>
+          <div class="detail-content">
+            <div class="detail-section">
+              <div class="detail-section-title">Activity</div>
+              
+              <div class="call-log-item">
+                <div class="call-log-header">
+                  <div class="call-log-type">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    Inbound call
+                  </div>
+                  <div class="call-log-duration">2m 34s</div>
+                </div>
+                <div class="call-log-meta">Veronica Simmons · Land Title Main · Today 2:15 PM</div>
+              </div>
+              
+              <div class="activity-item">
+                <div class="activity-dot done"></div>
+                <div>
+                  <div>Witness fee approved (+$25)</div>
+                  <div class="activity-time">Today, 2:18 PM</div>
+                </div>
+              </div>
+              
+              <div class="call-log-item">
+                <div class="call-log-header">
+                  <div class="call-log-type">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    Outbound call
+                  </div>
+                  <div class="call-log-duration">1m 12s</div>
+                </div>
+                <div class="call-log-meta">To: Maria Gonzalez (notary) · Today 1:45 PM</div>
+              </div>
+              
+              <div class="activity-item">
+                <div class="activity-dot msg"></div>
+                <div>
+                  <div>Email from Land Title: "Notary needs 2 forms of ID"</div>
+                  <div class="activity-time">Today, 9:30 AM</div>
+                </div>
+              </div>
+              
+              <div class="activity-item">
+                <div class="activity-dot done"></div>
+                <div>
+                  <div>Docs uploaded · 98 pages</div>
+                  <div class="activity-time">Apr 19, 9:42 AM</div>
+                </div>
+              </div>
+              
+              <div class="activity-item">
+                <div class="activity-dot done"></div>
+                <div>
+                  <div>Notary assigned — Maria Gonzalez</div>
+                  <div class="activity-time">Apr 18, 2:45 PM</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showView(id) {
+      document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+      document.getElementById('view-' + id).classList.remove('hidden');
+      document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+  </script>
+</body>
+</html>

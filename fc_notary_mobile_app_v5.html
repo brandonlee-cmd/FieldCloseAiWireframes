@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FieldCloseAi Notary Mobile App v5 — Final Wireframe</title>
+  <style>
+    :root {
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f5f5f5;
+      --color-background-tertiary: #e5e5e5;
+      --color-background-success: #dcfce7;
+      --color-background-warning: #fef3c7;
+      --color-background-info: #dbeafe;
+      --color-text-primary: #171717;
+      --color-text-secondary: #525252;
+      --color-text-tertiary: #a3a3a3;
+      --color-text-success: #15803d;
+      --color-text-warning: #a16207;
+      --color-text-info: #1d4ed8;
+      --color-border-tertiary: #e5e5e5;
+      --color-border-secondary: #d4d4d4;
+      --color-border-info: #93c5fd;
+      --border-radius-md: 8px;
+      --border-radius-lg: 12px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-background-primary: #171717;
+        --color-background-secondary: #262626;
+        --color-background-tertiary: #404040;
+        --color-background-success: #14532d;
+        --color-background-warning: #451a03;
+        --color-background-info: #1e3a5f;
+        --color-text-primary: #f5f5f5;
+        --color-text-secondary: #a3a3a3;
+        --color-text-tertiary: #737373;
+        --color-text-success: #4ade80;
+        --color-text-warning: #fbbf24;
+        --color-text-info: #60a5fa;
+        --color-border-tertiary: #404040;
+        --color-border-secondary: #525252;
+        --color-border-info: #1d4ed8;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--color-background-secondary); padding: 20px; color: var(--color-text-primary); }
+    h1 { font-size: 20px; margin-bottom: 8px; }
+    h2 { font-size: 14px; color: var(--color-text-secondary); font-weight: normal; margin-bottom: 20px; }
+    
+    .nav-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+    .nav-btn { padding: 8px 14px; font-size: 13px; background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); cursor: pointer; font-family: inherit; color: var(--color-text-primary); }
+    .nav-btn.active { background: var(--color-background-info); border-color: var(--color-border-info); color: var(--color-text-info); }
+    
+    .phone-frame { background: #1a1a1a; border-radius: 40px; padding: 14px; max-width: 390px; margin: 0 auto; }
+    .phone-screen { background: var(--color-background-primary); border-radius: 30px; min-height: 750px; overflow: hidden; display: flex; flex-direction: column; }
+    
+    .screen { display: none; flex-direction: column; min-height: 750px; }
+    .screen.active { display: flex; }
+    
+    .header { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+    .back-link { background: none; border: none; font-size: 14px; color: var(--color-text-secondary); cursor: pointer; font-family: inherit; padding: 0; }
+    .header-title { font-size: 15px; font-weight: 500; }
+    
+    .content { padding: 20px; flex: 1; overflow-y: auto; }
+    .footer { padding: 16px 20px; border-top: 0.5px solid var(--color-border-tertiary); }
+    
+    .status-pill { font-size: 12px; padding: 4px 10px; background: var(--color-background-success); color: var(--color-text-success); border-radius: 12px; font-weight: 500; }
+    
+    .section { margin-bottom: 20px; }
+    .section-label { font-size: 12px; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    
+    .card { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 14px; margin-bottom: 12px; }
+    .card-warning { background: var(--color-background-warning); border-left: 3px solid var(--color-text-warning); }
+    .card-info { background: var(--color-background-info); border-left: 3px solid var(--color-text-info); }
+    
+    .btn-primary { width: 100%; padding: 16px; background: linear-gradient(135deg, #3B6D11 0%, #639922 100%); color: white; border: none; border-radius: var(--border-radius-md); font-size: 16px; font-weight: 500; cursor: pointer; font-family: inherit; }
+    .btn-primary-blue { width: 100%; padding: 16px; background: var(--color-text-info); color: white; border: none; border-radius: var(--border-radius-md); font-size: 16px; font-weight: 500; cursor: pointer; font-family: inherit; }
+    .btn-secondary { padding: 8px 14px; background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 13px; cursor: pointer; font-family: inherit; color: var(--color-text-primary); }
+    .btn-text { width: 100%; padding: 12px; background: none; color: var(--color-text-secondary); border: none; font-size: 14px; cursor: pointer; font-family: inherit; margin-top: 8px; }
+    .btn-text-danger { width: 100%; padding: 12px; background: none; color: #E24B4A; border: none; font-size: 14px; cursor: pointer; font-family: inherit; margin-top: 4px; }
+    
+    .btn-acknowledge { width: 100%; padding: 12px; background: var(--color-background-info); border: none; border-radius: var(--border-radius-md); font-size: 13px; color: var(--color-text-info); cursor: pointer; font-family: inherit; transition: all 0.2s; }
+    .btn-acknowledge.acknowledged { background: var(--color-background-success); color: var(--color-text-success); }
+    .btn-acknowledge-block { width: 100%; padding: 16px; background: var(--color-text-info); color: white; border: none; border-radius: var(--border-radius-md); font-size: 16px; font-weight: 500; cursor: pointer; font-family: inherit; }
+    
+    .action-btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px; background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; color: var(--color-text-primary); }
+    .action-btn-full { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px; background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; color: var(--color-text-primary); }
+    
+    .action-btn-support { display: flex; align-items: center; gap: 12px; width: 100%; padding: 16px; background: var(--color-background-primary); border: 1px solid var(--color-border-info); border-radius: var(--border-radius-lg); cursor: pointer; font-family: inherit; color: var(--color-text-primary); text-align: left; }
+    
+    .req-badge { font-size: 12px; padding: 6px 10px; background: var(--color-background-secondary); border-radius: 6px; color: var(--color-text-secondary); display: inline-block; margin: 4px 4px 0 0; }
+    
+    .link-btn { background: none; border: none; color: var(--color-text-info); font-size: 14px; padding: 0; cursor: pointer; font-family: inherit; }
+    
+    .status-progress { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: var(--color-background-secondary); }
+    .status-step { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .status-step span { font-size: 10px; color: var(--color-text-tertiary); }
+    .status-step.completed span, .status-step.active span { color: var(--color-text-primary); }
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--color-border-tertiary); }
+    .status-step.completed .status-dot { background: var(--color-text-success); }
+    .status-step.active .status-dot { background: var(--color-text-info); box-shadow: 0 0 0 3px var(--color-background-info); }
+    .status-line { flex: 1; height: 2px; background: var(--color-border-tertiary); margin: 0 4px; }
+    .status-line.completed { background: var(--color-text-success); }
+    
+    .confirm-option { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); margin-bottom: 8px; cursor: pointer; font-size: 14px; }
+    .confirm-option.selected { border-color: var(--color-text-info); background: var(--color-background-info); }
+    .confirm-option.requires-notes.selected { border-color: var(--color-text-warning); background: var(--color-background-warning); }
+    .confirm-radio { width: 20px; height: 20px; border: 2px solid var(--color-border-secondary); border-radius: 50%; flex-shrink: 0; }
+    .confirm-option.selected .confirm-radio { border-color: var(--color-text-info); background: var(--color-text-info); }
+    .confirm-option.requires-notes.selected .confirm-radio { border-color: var(--color-text-warning); background: var(--color-text-warning); }
+    
+    .note-input { width: 100%; min-height: 80px; padding: 12px; border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-family: inherit; font-size: 14px; resize: none; background: var(--color-background-primary); color: var(--color-text-primary); }
+    .note-input.required { border-color: var(--color-text-warning); }
+    
+    .support-option { display: flex; align-items: center; padding: 14px; background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); margin-bottom: 10px; cursor: pointer; }
+    .support-option:hover { border-color: var(--color-border-secondary); }
+    .support-option-content { flex: 1; }
+    .support-option-title { font-size: 14px; font-weight: 500; margin: 0; }
+    .support-option-route { font-size: 12px; color: var(--color-text-secondary); margin-top: 4px; }
+    .support-arrow { font-size: 20px; color: var(--color-text-tertiary); }
+    
+    .alert-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 100; }
+    .alert-card { background: var(--color-background-primary); border-radius: 16px; padding: 24px; max-width: 320px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+    .alert-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--color-background-info); color: var(--color-text-info); padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; margin-bottom: 16px; }
+    
+    .blocked-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; z-index: 200; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    
+    .info-text { font-size: 12px; color: var(--color-text-tertiary); text-align: center; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <h1>FieldCloseAi — Notary Mobile App v5</h1>
+  <h2>Final wireframe for designer and engineering team</h2>
+  
+  <div class="nav-container">
+    <button class="nav-btn active" onclick="showScreen('briefing')">Briefing</button>
+    <button class="nav-btn" onclick="showScreen('confirm-signer')">Confirm Signer</button>
+    <button class="nav-btn" onclick="showScreen('active-pre')">Active (En Route)</button>
+    <button class="nav-btn" onclick="showScreen('active-post')">Active (At Location)</button>
+    <button class="nav-btn" onclick="showScreen('new-instruction')">New Instruction Alert</button>
+    <button class="nav-btn" onclick="showScreen('support')">Contact Support</button>
+    <button class="nav-btn" onclick="showScreen('support-lo')">LO Contact</button>
+    <button class="nav-btn" onclick="showScreen('complete')">Signing Complete</button>
+    <button class="nav-btn" onclick="showScreen('dnc')">Did Not Close</button>
+  </div>
+
+  <div class="phone-frame">
+    <div class="phone-screen">
+
+      <!-- ============== BRIEFING ============== -->
+      <div id="screen-briefing" class="screen active">
+        <div class="header">
+          <button class="back-link">← Back</button>
+          <span class="header-title">Order briefing</span>
+          <span style="width: 50px;"></span>
+        </div>
+
+        <div class="content">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+            <div>
+              <p style="font-size: 18px; font-weight: 500;">Purchase signing</p>
+              <p style="font-size: 14px; color: var(--color-text-secondary); margin-top: 4px;">Today, 10:00 AM · $150</p>
+            </div>
+            <span class="status-pill">Confirmed</span>
+          </div>
+
+          <!-- Signer Confirmation Status -->
+          <div class="card card-warning" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <p style="font-size: 14px; font-weight: 500; color: var(--color-text-warning);">Signer not yet confirmed</p>
+              <p style="font-size: 12px; color: var(--color-text-warning); margin-top: 2px;">Contact signer to confirm appointment</p>
+            </div>
+            <button class="btn-secondary" onclick="showScreen('confirm-signer')">Confirm</button>
+          </div>
+
+          <div class="section">
+            <p class="section-label">Borrower</p>
+            <p style="font-size: 15px; font-weight: 500;">James & Maria Rodriguez</p>
+            <p style="font-size: 14px; color: var(--color-text-info); margin-top: 4px; cursor: pointer;" onclick="showScreen('confirm-signer')">(704) 555-0123</p>
+          </div>
+
+          <div class="section">
+            <p class="section-label">Signing location</p>
+            <p style="font-size: 15px;">1234 Oak Street</p>
+            <p style="font-size: 14px; color: var(--color-text-secondary); margin-top: 2px;">Charlotte, NC 28202</p>
+            <button class="link-btn" style="margin-top: 8px;">Open in Maps →</button>
+          </div>
+
+          <div class="section">
+            <p class="section-label">Requirements</p>
+            <div style="margin-top: 4px;">
+              <span class="req-badge">Blue ink only</span>
+              <span class="req-badge">2 ID required</span>
+              <span class="req-badge">Right of rescission</span>
+            </div>
+          </div>
+
+          <div class="section">
+            <p class="section-label">Instructions from title</p>
+            <div style="background: var(--color-background-secondary); border-left: 3px solid var(--color-text-info); border-radius: var(--border-radius-md); padding: 12px; margin-top: 8px;">
+              <p style="font-size: 14px; margin-bottom: 12px;">Please call borrower 30 min before arrival. Scanback required immediately after signing. Deliver originals to our office at 500 Main St by 5pm.</p>
+              <button class="btn-acknowledge" id="ack-btn-1" onclick="acknowledgeInstruction(this)">
+                <span class="ack-text">Tap to confirm you've read this</span>
+                <span class="ack-check" style="display: none;">✓ Acknowledged</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="section">
+            <p class="section-label">Situation flags</p>
+            <div style="background: var(--color-background-warning); border-radius: var(--border-radius-md); padding: 10px; margin-top: 8px;">
+              <p style="font-size: 13px; color: var(--color-text-warning);">⚠ Borrower is hard of hearing — speak clearly and face them when talking</p>
+            </div>
+          </div>
+
+          <div class="section">
+            <p class="section-label">Documents</p>
+            <button class="action-btn-full" style="margin-top: 8px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Download closing package (98 pages)
+            </button>
+          </div>
+        </div>
+
+        <div class="footer">
+          <button class="btn-primary" onclick="showScreen('active-pre')">I am on my way</button>
+        </div>
+      </div>
+
+      <!-- ============== CONFIRM SIGNER ============== -->
+      <div id="screen-confirm-signer" class="screen">
+        <div class="header">
+          <button class="back-link" onclick="showScreen('briefing')">← Back</button>
+          <span class="header-title">Confirm with signer</span>
+          <span style="width: 50px;"></span>
+        </div>
+
+        <div class="content">
+          <div class="card">
+            <p style="font-size: 16px; font-weight: 500;">James & Maria Rodriguez</p>
+            <p style="font-size: 14px; color: var(--color-text-secondary); margin-top: 4px;">Today, 10:00 AM · 1234 Oak Street</p>
+          </div>
+
+          <p style="font-size: 14px; color: var(--color-text-secondary); margin-bottom: 16px;">Contact the signer to confirm the appointment, then log the result below.</p>
+
+          <div class="grid-2" style="margin-bottom: 24px;">
+            <button class="action-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+              Call signer
+            </button>
+            <button class="action-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Text signer
+            </button>
+          </div>
+
+          <p style="font-size: 14px; font-weight: 500; margin-bottom: 12px;">What happened?</p>
+
+          <div class="confirm-option" onclick="selectConfirmOption(this, 'confirmed', false)">
+            <div class="confirm-radio"></div>
+            <span>Confirmed — signer is ready</span>
+          </div>
+
+          <div class="confirm-option" onclick="selectConfirmOption(this, 'no-answer', false)">
+            <div class="confirm-radio"></div>
+            <span>No answer — left voicemail</span>
+          </div>
+
+          <div class="confirm-option" onclick="selectConfirmOption(this, 'no-answer-no-vm', false)">
+            <div class="confirm-radio"></div>
+            <span>No answer — no voicemail</span>
+          </div>
+
+          <div class="confirm-option requires-notes" onclick="selectConfirmOption(this, 'reschedule', true)">
+            <div class="confirm-radio"></div>
+            <span>Signer requested reschedule</span>
+          </div>
+
+          <div class="confirm-option requires-notes" onclick="selectConfirmOption(this, 'other', true)">
+            <div class="confirm-radio"></div>
+            <span>Other issue</span>
+          </div>
+
+          <label style="font-size: 13px; color: var(--color-text-secondary); display: block; margin: 20px 0 6px;">Notes from signer <span id="notes-required" style="color: var(--color-text-warning); display: none;">(required)</span></label>
+          <textarea id="signer-notes" class="note-input" placeholder="e.g., Will be at neighbor's house, running 10 min late..."></textarea>
+        </div>
+
+        <div class="footer">
+          <button class="btn-primary-blue" onclick="showScreen('briefing')">Save confirmation</button>
+        </div>
+      </div>
+
+      <!-- ============== ACTIVE (PRE-ARRIVAL / EN ROUTE) ============== -->
+      <div id="screen-active-pre" class="screen">
+        <div class="header">
+          <button class="back-link" onclick="showScreen('briefing')">← Briefing</button>
+          <span class="header-title">Active signing</span>
+          <span style="width: 50px;"></span>
+        </div>
+
+        <div class="status-progress">
+          <div class="status-step completed">
+            <div class="status-dot"></div>
+            <span>Accepted</span>
+          </div>
+          <div class="status-line completed"></div>
+          <div class="status-step active">
+            <div class="status-dot"></div>
+            <span>En route</span>
+          </div>
+          <div class="status-line"></div>
+          <div class="status-step">
+            <div class="status-dot"></div>
+            <span>At location</span>
+          </div>
+          <div class="status-line"></div>
+          <div class="status-step">
+            <div class="status-dot"></div>
+            <span>Complete</span>
+          </div>
+        </div>
+
+        <div class="content">
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <p style="font-size: 16px; font-weight: 500;">Purchase signing</p>
+              <span style="font-size: 16px; font-weight: 500; color: var(--color-text-success);">$150</span>
+            </div>
+            <p style="font-size: 14px; color: var(--color-text-secondary);">James & Maria Rodriguez</p>
+            <p style="font-size: 14px; color: var(--color-text-secondary); margin-top: 2px;">1234 Oak Street, Charlotte</p>
+          </div>
+
+          <!-- Quick Actions (visible pre-arrival) -->
+          <div class="grid-2" style="margin-bottom: 16px;">
+            <button class="action-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+              Navigate
+            </button>
+            <button class="action-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+              Call signer
+            </button>
+          </div>
+
+          <!-- Instructions (acknowledged) -->
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+              <p style="font-size: 12px; color: var(--color-text-tertiary);">Instructions from title</p>
+              <span style="font-size: 11px; color: var(--color-text-success);">✓ Acknowledged</span>
+            </div>
+            <p style="font-size: 14px;">Scanback required immediately. Deliver originals to 500 Main St by 5pm.</p>
+          </div>
+
+          <!-- Contact Support -->
+          <button class="action-btn-support" onclick="showScreen('support')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <div>
+              <p style="font-size: 15px; font-weight: 500;">Contact Support</p>
+              <p style="font-size: 12px; color: var(--color-text-secondary); margin-top: 2px;">Report an issue or request assistance</p>
+            </div>
+            <span style="color: var(--color-text-tertiary); margin-left: auto;">›</span>
+          </button>
+        </div>
+
+        <div class="footer">
+          <button class="btn-primary-blue" onclick="showScreen('active-post')">I have arrived</button>
+        </div>
+      </div>
+
+      <!-- ============== ACTIVE (AT LOCATION) ============== -->
+      <div id="screen-active-post" class="screen">
+        <div class="header">
+          <button class="back-link" onclick="showScreen('active-pre')">← Back</button>
+          <span class="header-title">At location</span>
+          <span style="width: 50px;"></span>
+        </div>
+
+        <div class="status-progress">
+          <div class="status-step completed">
+            <div class="status-dot"></div>
+            <span>Accepted</span>
+          </div>
+          <div class="status-line completed"></div>
+          <div class="status-step completed">
+            <div class="status-dot"></div>
+            <span>En route</span>
+          </div>
+          <div class="status-line completed"></div>
+          <div class="status-step active">
+            <div class="status-dot"></div>
+            <span>At location</span>
+          </div>
+          <div class="status-line"></div>
+          <div class="status-step">
+            <div class="status-dot"></div>
+            <span>Complete</span>
+          </div>
+        </div>
+        <p class="info-text">Borrower notified: "Your notary has arrived"</p>
+
+        <div class="content">
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <p style="font-size: 16px; font-weight: 500;">Purchase signing</p>
+              <span style="font-size: 16px; font-weight: 500; color: var(--color-text-success);">$150</span>
+            </div>
+            <p style="font-size: 14px; color: var(--color-text-secondary);">James & Maria Rodriguez</p>
+          </div>
+
+          <!-- NO Navigate or Call Signer buttons — they're with the signer now -->
+
+          <!-- Instructions (still visible, acknowledged) -->
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+              <p style="font-size: 12px; color: var(--color-text-tertiary);">Instructions from title</p>
+              <span style="font-size: 11px; color: var(--color-text-success);">✓ Acknowledged</span>
+            </div>
+            <p style="font-size: 14px;">Scanback required immediately. Deliver originals to 500 Main St by 5pm.</p>
+          </div>
+
+          <!-- Contact Support -->
+          <button class="action-btn-support" onclick="showScreen('support')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <div>
+              <p style="font-size: 15px; font-weight: 500;">Contact Support</p>
+              <p style="font-size: 12px; color: var(--color-text-secondary); margin-top: 2px;">Report an issue or request assistance</p>
+            </div>
+            <span style="color: var(--color-text-tertiary); margin-left: auto;">›</span>
+          </button>
+        </div>
+
+        <div class="footer">
+          <button class="btn-primary" onclick="showScreen('complete')">Signing complete</button>
+          <button class="btn-text-danger" onclick="showScreen('dnc')">Did not close</button>
+        </div>
+      </div>
+
+      <!-- ============== NEW INSTRUCTION ALERT (Blocks all actions) ============== -->
+      <div id="screen-new-instruction" class="screen">
+        <div class="header">
+          <span style="width: 50px;"></span>
+          <span class="header-title">Active signing</span>
+          <span style="width: 50px;"></span>
+        </div>
+
+        <div class="status-progress">
+          <div class="status-step completed"><div class="status-dot"></div><span>Accepted</span></div>
+          <div class="status-line completed"></div>
+          <div class="status-step active"><div class="status-dot"></div><span>En route</span></div>
+          <div class="status-line"></div>
+          <div class="status-step"><div class="status-dot"></div><span>At location</span></div>
+          <div class="status-line"></div>
+          <div class="status-step"><div class="status-dot"></div><span>Complete</span></div>
+        </div>
+
+        <div class="content" style="opacity: 0.3; pointer-events: none;">
+          <div class="card">
+            <p style="font-size: 16px; font-weight: 500;">Purchase signing</p>
+            <p style="font-size: 14px; color: var(--color-text-secondary);">James & Maria Rodriguez</p>
+          </div>
+        </div>
+
+        <!-- Blocking overlay -->
+        <div class="blocked-overlay">
+          <div class="alert-card">
+            <div class="alert-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              NEW INSTRUCTION
+            </div>
+            <p style="font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 4px;">RE: James & Maria Rodriguez · 10:00 AM</p>
+            <p style="font-size: 11px; color: var(--color-text-secondary); margin-bottom: 12px;">Just now · Land Title Main</p>
+            
+            <p style="font-size: 15px; line-height: 1.5;">Signer just called — they will be at the neighbor's house at <strong>1236 Oak Street</strong> (two doors down). Ring the doorbell, they're expecting you.</p>
+
+            <button class="btn-acknowledge-block" onclick="showScreen('active-pre')" style="margin-top: 20px;">Got it</button>
+            
+            <p style="font-size: 11px; color: var(--color-text-tertiary); text-align: center; margin-top: 12px;">You must acknowledge this instruction to continue</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============== CONTACT SUPPORT ============== -->
+      <div id="screen-support" class="screen">
+        <div class="header">
+          <button class="back-link" onclick="showScreen('active-post')">← Back</button>
+          <span class="header-title">Contact Support</span>
+          <span style="width: 50px;"></span>
+        </div>
+
+        <div class="content">
+          <p style="font-size: 14px; color: var(--color-text-secondary); margin-bottom: 16px;">What do you need help with?</p>
+
+          <div class="support-option" onclick="showScreen('support-confirm')">
+            <div class="support-option-content">
+              <p class="support-option-title">Borrower not present or not responding</p>
+              <p class="support-option-route">Title agent + FC staff alerted</p>
+            </div>
+            <span class="support-arrow">›</span>
+          </div>
+
+          <div class="support-option" onclick="showScreen('support-confirm')">
+            <div class="support-option-content">
+              <p class="support-option-title">Document issue — wrong docs or missing pages</p>
+              <p class="support-option-route">Title agent alerted</p>
+            </div>
+            <span class="support-arrow">›</span>
+          </div>
+
+          <div class="support-option" onclick="showScreen('support-confirm')">
+            <div class="support-option-content">
+              <p class="support-option-title">Borrower ID issue</p>
+              <p class="support-option-route">Title agent alerted</p>
+            </div>
+            <span class="support-arrow">›</span>
+          </div>
+
+          <div class="support-option" onclick="showScreen('support-lo')">
+            <div class="support-option-content">
+              <p class="support-option-title">Borrower has questions about loan terms</p>
+              <p class="support-option-route">Loan officer contacted</p>
+            </div>
+            <span class="support-arrow">›</span>
+          </div>
+
+          <div class="support-option" onclick="showScreen('support-lo')">
+            <div class="support-option-content">
+              <p class="support-option-title">Borrower is requesting their loan officer</p>
+              <p class="support-option-route">Loan officer contacted</p>
+            </div>
+            <span class="support-arrow">›</span>
+          </div>
+
+          <div class="support-option" onclick="showScreen('support-confirm')">
+            <div class="support-option-content">
+              <p class="support-option-title">I cannot complete this signing</p>
+              <p class="support-option-route">FC staff alerted immediately</p>
+            </div>
+            <span class="support-arrow">›</span>
+          </div>
+
+          <div class="support-option" onclick="showScreen('support-confirm')">
+            <div class="support-option-content">
+              <p class="support-option-title">Other issue</p>
+              <p class="support-option-route">Message FC staff</p>
+            </div>
+            <span class="support-arrow">›</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============== SUPPORT - LO Contact ============== -->
+      <div id="screen-support-lo" class="screen">
+        <div class="header">
+          <button class="back-link" onclick="showScreen('support')">← Back</button>
+          <span class="header-title">Confirm</span>
+          <span style="width: 50px;"></span>
+        </div>
+
+        <div class="content">
+          <div style="text-align: center; margin-bottom: 24px;">
+            <div style="width: 56px; height: 56px; background: var(--color-background-info); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-info)" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            </div>
+            <p style="font-size: 18px; font-weight: 500;">Connecting to loan officer</p>
+            <p style="font-size: 14px; color: var(--color-text-secondary); margin-top: 8px;">for James & Maria Rodriguez</p>
+          </div>
+
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span style="font-size: 13px; color: var(--color-text-secondary);">Loan officer</span>
+              <span style="font-size: 14px; font-weight: 500;">Michael Chen</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="font-size: 13px; color: var(--color-text-secondary);">Status</span>
+              <span style="font-size: 14px; font-weight: 500; color: var(--color-text-success);">Available</span>
+            </div>
+          </div>
+
+          <p style="font-size: 13px; color: var(--color-text-secondary); text-align: center;">Calling through Land Title Main.<br/>The LO will not see your personal number.</p>
+        </div>
+
+        <div class="footer">
+          <button class="btn-primary-blue">Connect now</button>
+          <button class="btn-text" onclick="showScreen('support')">← Go back</button>
+        </div>
+      </div>
+
+      <!-- ============== SUPPORT - General Confirm ============== -->
+      <div id="screen-support-confirm" class="screen">
+        <div class="header">
+          <button class="back-link" onclick="showScreen('support')">← Back</button>
+          <span class="header-title">Confirm</span>
+          <span style="width: 50px;"></span>
+        </div>
+
+        <div class="content">
+          <p style="font-size: 16px; font-weight: 500;">Alerting Land Title Main</p>
+          <p style="font-size: 14px; color: var(--color-text-secondary); margin-top: 8px; margin-bottom: 20px;">about an issue on this closing.</p>
+
+          <div class="card">
+            <p style="font-size: 13px; color: var(--color-text-secondary);">FC-2026-0419-00847</p>
+            <p style="font-size: 15px; font-weight: 500; margin-top: 4px;">James & Maria Rodriguez</p>
+          </div>
+
+          <label style="font-size: 13px; color: var(--color-text-secondary); display: block; margin-bottom: 6px;">Describe the issue (optional)</label>
+          <textarea class="note-input" placeholder="What's happening..."></textarea>
+        </div>
+
+        <div class="footer">
+          <button class="btn-primary-blue" onclick="showScreen('active-post')">Send alert</button>
+          <button class="btn-text" onclick="showScreen('support')">← Go back</button>
+        </div>
+      </div>
+
+      <!-- ============== SIGNING COMPLETE ============== -->
+      <div id="screen-complete" class="screen">
+        <div class="content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+          <div style="width: 80px; height: 80px; background: var(--color-background-success); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-success)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <p style="font-size: 22px; font-weight: 500;">Signing complete</p>
+          <p style="font-size: 14px; color: var(--color-text-secondary); margin-top: 8px;">Great work! The borrower and LO<br/>have been notified.</p>
+
+          <div class="card" style="width: 100%; max-width: 280px; margin-top: 24px; text-align: left;">
+            <p style="font-size: 13px; font-weight: 500; margin-bottom: 8px;">Next steps</p>
+            <p style="font-size: 14px; color: var(--color-text-secondary);">Upload your scanback, then deliver originals to 500 Main St by 5pm.</p>
+          </div>
+        </div>
+
+        <div class="footer">
+          <button class="btn-primary-blue">Upload scanback</button>
+          <button class="btn-text">I'll do this later</button>
+        </div>
+      </div>
+
+      <!-- ============== DID NOT CLOSE ============== -->
+      <div id="screen-dnc" class="screen">
+        <div class="header">
+          <button class="back-link" onclick="showScreen('active-post')">← Back</button>
+          <span class="header-title">Did not close</span>
+          <span style="width: 50px;"></span>
+        </div>
+
+        <div class="content">
+          <div style="background: #FEE2E2; border-radius: var(--border-radius-md); padding: 12px; margin-bottom: 20px;">
+            <p style="font-size: 14px; color: #991B1B; font-weight: 500;">This signing did not complete</p>
+          </div>
+
+          <p style="font-size: 14px; color: var(--color-text-secondary); margin-bottom: 16px;">What happened?</p>
+
+          <div class="confirm-option" onclick="selectDncOption(this, 'no-show', false)">
+            <div class="confirm-radio"></div>
+            <span>Borrower did not show / could not be reached</span>
+          </div>
+
+          <div class="confirm-option" onclick="selectDncOption(this, 'refused', false)">
+            <div class="confirm-radio"></div>
+            <span>Borrower refused to sign</span>
+          </div>
+
+          <div class="confirm-option" onclick="selectDncOption(this, 'terms', false)">
+            <div class="confirm-radio"></div>
+            <span>Borrower had questions about terms — could not resolve</span>
+          </div>
+
+          <div class="confirm-option" onclick="selectDncOption(this, 'docs', false)">
+            <div class="confirm-radio"></div>
+            <span>Document issues — title could not resolve</span>
+          </div>
+
+          <div class="confirm-option" onclick="selectDncOption(this, 'id', false)">
+            <div class="confirm-radio"></div>
+            <span>ID verification failed</span>
+          </div>
+
+          <div class="confirm-option" onclick="selectDncOption(this, 'personal', false)">
+            <div class="confirm-radio"></div>
+            <span>Borrower personal circumstances</span>
+          </div>
+
+          <div class="confirm-option requires-notes" onclick="selectDncOption(this, 'other', true)">
+            <div class="confirm-radio"></div>
+            <span>Other reason</span>
+          </div>
+
+          <label style="font-size: 13px; color: var(--color-text-secondary); display: block; margin: 20px 0 6px;">Additional details <span id="dnc-notes-required" style="color: var(--color-text-warning); display: none;">(required)</span></label>
+          <textarea id="dnc-notes" class="note-input" placeholder="Any additional context..."></textarea>
+        </div>
+
+        <div class="footer">
+          <button class="btn-primary" style="background: #DC2626;">Submit DNC report</button>
+          <button class="btn-text" onclick="showScreen('active-post')">← Go back</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-' + screenId).classList.add('active');
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    }
+
+    function acknowledgeInstruction(btn) {
+      btn.classList.add('acknowledged');
+      btn.querySelector('.ack-text').style.display = 'none';
+      btn.querySelector('.ack-check').style.display = 'inline';
+    }
+
+    function selectConfirmOption(el, value, requiresNotes) {
+      document.querySelectorAll('#screen-confirm-signer .confirm-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      
+      const notesRequired = document.getElementById('notes-required');
+      const notesInput = document.getElementById('signer-notes');
+      
+      if (requiresNotes) {
+        notesRequired.style.display = 'inline';
+        notesInput.classList.add('required');
+        notesInput.placeholder = 'Please explain...';
+      } else {
+        notesRequired.style.display = 'none';
+        notesInput.classList.remove('required');
+        notesInput.placeholder = 'e.g., Will be at neighbor\'s house, running 10 min late...';
+      }
+    }
+
+    function selectDncOption(el, value, requiresNotes) {
+      document.querySelectorAll('#screen-dnc .confirm-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      
+      const notesRequired = document.getElementById('dnc-notes-required');
+      const notesInput = document.getElementById('dnc-notes');
+      
+      if (requiresNotes) {
+        notesRequired.style.display = 'inline';
+        notesInput.classList.add('required');
+        notesInput.placeholder = 'Please explain what happened...';
+      } else {
+        notesRequired.style.display = 'none';
+        notesInput.classList.remove('required');
+        notesInput.placeholder = 'Any additional context...';
+      }
+    }
+  </script>
+</body>
+</html>
